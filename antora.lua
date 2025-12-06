@@ -581,9 +581,25 @@ function antoralib:MakeWindow(Configs)
 		BackgroundTransparency = 0,
 		Name = "Hub"
 	}), "Main")
-	Make("Gradient", MainFrame, {
-		Rotation = 45
-	})MakeDrag(MainFrame)
+	
+		local BackgroundImage = Create("ImageLabel", MainFrame, {
+    Size = UDim2.new(1, 0, 1, 0),
+    Position = UDim2.new(0, 0, 0, 0),
+    BackgroundTransparency = 1,
+    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920",
+    ScaleType = Enum.ScaleType.Crop,
+    ImageColor3 = Color3.fromRGB(255, 255, 255),
+    ImageTransparency = 0.05
+})
+
+local Overlay = Create("Frame", BackgroundImage, {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+    BackgroundTransparency = 0.5,
+    ZIndex = 1
+})
+
+MakeDrag(MainFrame)
 	
 	local MainCorner = Make("Corner", MainFrame)
 	
@@ -1848,5 +1864,6 @@ end
 	MinimizeButton.Activated:Connect(Window.MinimizeBtn)
 	return Window
 end
+
 
 return antoralib
