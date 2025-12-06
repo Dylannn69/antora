@@ -601,7 +601,7 @@ local StrokeGradient = Create("UIGradient", GlowStroke, {
 -- Inner sharp stroke for definition
 local InnerStroke = Create("UIStroke", MainFrame, {
     Color = Color3.fromRGB(255, 100, 100),
-    Thickness = 1,
+    Thickness = 3,
     Transparency = 0,
     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 })
@@ -609,7 +609,7 @@ local InnerStroke = Create("UIStroke", MainFrame, {
 
 -- Create inner frame (NO GAP - edge to edge)
 local InnerFrame = Create("Frame", MainFrame, {
-    Size = UDim2.new(1, 0, 1, 0),  -- No gap
+    Size = UDim2.new(1, -2, 1, -2),  -- No gap
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
     BackgroundTransparency = 1,
@@ -621,7 +621,7 @@ local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
-    Image = "rbxassetid://97046630072920",
+    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920",
     ScaleType = Enum.ScaleType.Crop,
     ImageColor3 = Color3.fromRGB(255, 255, 255),
     ImageTransparency = 0.05
@@ -1905,5 +1905,6 @@ end
 end
 
 return antoralib
+
 
 
