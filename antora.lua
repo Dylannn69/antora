@@ -592,58 +592,11 @@ local BackgroundImage = Create("ImageLabel", MainFrame, {
     ImageTransparency = 0.05
 })
 
--- Create the stroke for glowing border
-local GlowStroke = Create("UIStroke", BackgroundImage, {
-    Color = Color3.fromRGB(255, 150, 150),  -- Starting color
-    Thickness = 3,
-    Transparency = 0.3,
-    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-})
-
--- Add the gradient to the stroke
-local StrokeGradient = Create("UIGradient", GlowStroke, {
-    Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-    }),
-    Rotation = 0,
-    Offset = Vector2.new(0, 0)
-})
-
--- Animate the gradient (pulse effect)
-task.spawn(function()
-    while GlowStroke and GlowStroke.Parent do
-        -- Pulse animation
-        for i = 0, 1, 0.02 do
-            if not GlowStroke then break end
-            GlowStroke.Transparency = 0.2 + (i * 0.3)  -- 0.2 to 0.5 transparency
-            task.wait(0.03)
-        end
-        for i = 1, 0, -0.02 do
-            if not GlowStroke then break end
-            GlowStroke.Transparency = 0.2 + (i * 0.3)  -- 0.5 to 0.2 transparency
-            task.wait(0.03)
-        end
-    end
-end)
-
--- Animate gradient movement (flowing effect)
-task.spawn(function()
-    while StrokeGradient and StrokeGradient.Parent do
-        for i = 0, 1, 0.01 do
-            if not StrokeGradient then break end
-            StrokeGradient.Offset = Vector2.new(i, 0)  -- Move horizontally
-            task.wait(0.05)
-        end
-    end
-end))
-
 -- Semi-transparent dark overlay (adjust transparency for your image)
 local Overlay = Create("Frame", BackgroundImage, {
     Size = UDim2.new(1, 0, 1, 0),
     BackgroundColor3 = Color3.fromRGB(10, 10, 10),
-    BackgroundTransparency = 0.6,  -- Adjust this (0.4-0.7)
+    BackgroundTransparency = 0.1,  -- Adjust this (0.4-0.7)
     ZIndex = 1
 })
 
@@ -1982,5 +1935,6 @@ end
 
 
 return antoralib
+
 
 
