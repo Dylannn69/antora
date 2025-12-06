@@ -636,6 +636,8 @@ local Overlay = Create("Frame", BackgroundImage, {
 })
 
 MakeDrag(MainFrame)
+	
+local MainCorner = Make("Corner", MainFrame, UDim.new(0, 0))  -- Square corners
 
 
 -- Put Components in InnerFrame
@@ -1904,6 +1906,7 @@ end
 end
 
 return antoralib
+
 
 
 
