@@ -573,7 +573,6 @@ function antoralib:MakeWindow(Configs)
 			end
 		end
 	end;LoadFile()
-	
 	local UISizeX, UISizeY = unpack(antoralib.Save.UISize)
 local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Size = UDim2.fromOffset(UISizeX, UISizeY),
@@ -582,26 +581,35 @@ local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Name = "Hub"
 }), "Main")
 
--- ========== ADD GLOWING RED BORDER ==========
--- Add glowing stroke to MainFrame
+-- ========== SHARP NEON RED BORDER ==========
 local GlowStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.fromRGB(255, 150, 150),
-    Thickness = 6,
-    Transparency = 0.2
+    Color = Color3.fromRGB(255, 0, 0),
+    Thickness = 3,
+    Transparency = 0,
+    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 })
 
--- Add your red gradient to the stroke
 local StrokeGradient = Create("UIGradient", GlowStroke, {
     Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),    -- Bright neon
+        ColorSequenceKeypoint.new(0.3, Color3.fromRGB(255, 0, 0)),    -- Neon red
+        ColorSequenceKeypoint.new(0.7, Color3.fromRGB(255, 0, 0)),    -- Neon red
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 0, 0))       -- Darker edge
     })
 })
 
--- Create inner frame (smaller to show the glow border)
+-- Inner sharp stroke for definition
+local InnerStroke = Create("UIStroke", MainFrame, {
+    Color = Color3.fromRGB(255, 100, 100),
+    Thickness = 1,
+    Transparency = 0,
+    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+})
+-- ========== END BORDER ==========
+
+-- Create inner frame (NO GAP - edge to edge)
 local InnerFrame = Create("Frame", MainFrame, {
-    Size = UDim2.new(1, 0, 1, 0),  
+    Size = UDim2.new(1, 0, 1, 0),  -- No gap
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
     BackgroundTransparency = 1,
@@ -613,7 +621,7 @@ local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
-    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920",
+    Image = "rbxassetid://97046630072920",
     ScaleType = Enum.ScaleType.Crop,
     ImageColor3 = Color3.fromRGB(255, 255, 255),
     ImageTransparency = 0.05
@@ -627,28 +635,16 @@ local Overlay = Create("Frame", BackgroundImage, {
     ZIndex = 1
 })
 
--- Animate the gradient to flow around the border
-task.spawn(function()
-    while StrokeGradient and StrokeGradient.Parent do
-        for i = 0, 1, 0.01 do
-            if not StrokeGradient then break end
-            StrokeGradient.Offset = Vector2.new(i, 0)  -- Flow from left to right
-            task.wait(0.05)
-        end
-    end
-end)
--- ========== END GLOWING BORDER ==========
-
 MakeDrag(MainFrame)
 
 local MainCorner = Make("Corner", MainFrame)
 
--- CHANGE THIS LINE: Put Components in InnerFrame instead of MainFrame
+-- Put Components in InnerFrame
 local Components = Create("Folder", InnerFrame, {
     Name = "Components"
 })
 
--- CHANGE THIS LINE: Put DropdownHolder in InnerFrame instead of ScreenGui
+-- Put DropdownHolder in InnerFrame
 local DropdownHolder = Create("Folder", InnerFrame, {
     Name = "Dropdown"
 })
@@ -666,6 +662,7 @@ local Label = Create("ImageLabel", TopBar, {
     BackgroundTransparency = 1,
     Image = Theme["antora Icon"]
 })
+	
 	
   local Title = InsertTheme(Create("TextLabel", TopBar, {
     Position = UDim2.new(0, 24, 0.5, 0),
@@ -1908,4 +1905,5 @@ end
 end
 
 return antoralib
+
 
