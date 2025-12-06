@@ -21,14 +21,14 @@ local antoralib = {
             ["Color Theme"] = Color3.fromRGB(88, 101, 242),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
             ["Color Dark Text"] = Color3.fromRGB(180, 180, 180),
-            ["antora Icon"] = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920"
+            ["antora Icon"] = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=98422026425819"
         }
     },
     Info = {
         Version = "vai toma no cu redz9999"
     },
     Save = {
-        UISize = {490, 300},
+        UISize = {590, 400},
         TabSize = 135,
         Theme = "Classic"
     },
@@ -1944,6 +1944,7 @@ gradient.Parent = Indicator
 end
 
 return antoralib
+
 
 
 
