@@ -575,58 +575,98 @@ function antoralib:MakeWindow(Configs)
 	end;LoadFile()
 	
 	local UISizeX, UISizeY = unpack(antoralib.Save.UISize)
-	local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
-		Size = UDim2.fromOffset(UISizeX, UISizeY),
-		Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
-		BackgroundTransparency = 0,
-		Name = "Hub"
-	}), "Main")
-	-- Image background
-local BackgroundImage = Create("ImageLabel", MainFrame, {
+local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
+    Size = UDim2.fromOffset(UISizeX, UISizeY),
+    Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
+    BackgroundTransparency = 0,
+    Name = "Hub"
+}), "Main")
+
+-- ========== ADD GLOWING RED BORDER ==========
+-- Add glowing stroke to MainFrame
+local GlowStroke = Create("UIStroke", MainFrame, {
+    Color = Color3.fromRGB(255, 150, 150),
+    Thickness = 6,
+    Transparency = 0.2
+})
+
+-- Add your red gradient to the stroke
+local StrokeGradient = Create("UIGradient", GlowStroke, {
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+    })
+})
+
+-- Create inner frame (smaller to show the glow border)
+local InnerFrame = Create("Frame", MainFrame, {
+    Size = UDim2.new(1, -12, 1, -12),  -- 6px border on each side
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundTransparency = 1,
+    Name = "InnerFrame"
+})
+
+-- Add your image background inside InnerFrame
+local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
-    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=(you decide)&height=(you decide)&assetId=97046630072920",
+    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920",
     ScaleType = Enum.ScaleType.Crop,
     ImageColor3 = Color3.fromRGB(255, 255, 255),
     ImageTransparency = 0.05
 })
 
--- Semi-transparent dark overlay (adjust transparency for your image)
+-- Dark overlay for text readability
 local Overlay = Create("Frame", BackgroundImage, {
     Size = UDim2.new(1, 0, 1, 0),
     BackgroundColor3 = Color3.fromRGB(10, 10, 10),
-    BackgroundTransparency = 0.1,  -- Adjust this (0.4-0.7)
+    BackgroundTransparency = 0.6,
     ZIndex = 1
 })
 
+-- Animate the gradient to flow around the border
+task.spawn(function()
+    while StrokeGradient and StrokeGradient.Parent do
+        for i = 0, 1, 0.01 do
+            if not StrokeGradient then break end
+            StrokeGradient.Offset = Vector2.new(i, 0)  -- Flow from left to right
+            task.wait(0.05)
+        end
+    end
+end)
+-- ========== END GLOWING BORDER ==========
+
 MakeDrag(MainFrame)
-		
-	
-	local MainCorner = Make("Corner", MainFrame)
-	
-	local Components = Create("Folder", MainFrame, {
-		Name = "Components"
-	})
-	
-	local DropdownHolder = Create("Folder", ScreenGui, {
-		Name = "Dropdown"
-	})
-	
-  local TopBar = Create("Frame", Components, {
+
+local MainCorner = Make("Corner", MainFrame)
+
+-- CHANGE THIS LINE: Put Components in InnerFrame instead of MainFrame
+local Components = Create("Folder", InnerFrame, {
+    Name = "Components"
+})
+
+-- CHANGE THIS LINE: Put DropdownHolder in InnerFrame instead of ScreenGui
+local DropdownHolder = Create("Folder", InnerFrame, {
+    Name = "Dropdown"
+})
+
+local TopBar = Create("Frame", Components, {
     Size = UDim2.new(1, 0, 0, 28),
     BackgroundTransparency = 1,
     Name = "Top Bar"
-  })
-  
-  local Label = Create("ImageLabel", TopBar, {
+})
+
+local Label = Create("ImageLabel", TopBar, {
     Size = UDim2.new(0, 17, 0, 17),
     Position = UDim2.new(0, 5, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
     BackgroundTransparency = 1,
     Image = Theme["antora Icon"]
 })
-  
+	
   local Title = InsertTheme(Create("TextLabel", TopBar, {
     Position = UDim2.new(0, 24, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
@@ -635,73 +675,7 @@ MakeDrag(MainFrame)
     TextXAlignment = "Left",
     TextSize = 14,
     TextColor3 = Theme["Color Text"],
-    BackgroundTran-- Image background
-local BackgroundImage = Create("ImageLabel", MainFrame, {
-    Size = UDim2.new(1, 0, 1, 0),
-    Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
-    Image = "rbxassetid://97046630072920",
-    ScaleType = Enum.ScaleType.Crop,
-    ImageColor3 = Color3.fromRGB(255, 255, 255),
-    ImageTransparency = 0.05
-})
-
--- Create the stroke for glowing border
-local GlowStroke = Create("UIStroke", BackgroundImage, {
-    Color = Color3.fromRGB(255, 150, 150),  -- Starting color
-    Thickness = 3,
-    Transparency = 0.3,
-    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-})
-
--- Add the gradient to the stroke
-local StrokeGradient = Create("UIGradient", GlowStroke, {
-    Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-    }),
-    Rotation = 0,
-    Offset = Vector2.new(0, 0)
-})
-
--- Animate the gradient (pulse effect)
-task.spawn(function()
-    while GlowStroke and GlowStroke.Parent do
-        -- Pulse animation
-        for i = 0, 1, 0.02 do
-            if not GlowStroke then break end
-            GlowStroke.Transparency = 0.2 + (i * 0.3)  -- 0.2 to 0.5 transparency
-            task.wait(0.03)
-        end
-        for i = 1, 0, -0.02 do
-            if not GlowStroke then break end
-            GlowStroke.Transparency = 0.2 + (i * 0.3)  -- 0.5 to 0.2 transparency
-            task.wait(0.03)
-        end
-    end
-end)
-
--- Animate gradient movement (flowing effect)
-task.spawn(function()
-    while StrokeGradient and StrokeGradient.Parent do
-        for i = 0, 1, 0.01 do
-            if not StrokeGradient then break end
-            StrokeGradient.Offset = Vector2.new(i, 0)  -- Move horizontally
-            task.wait(0.05)
-        end
-    end
-end))
-
--- Semi-transparent dark overlay (adjust transparency for your image)
-local Overlay = Create("Frame", BackgroundImage, {
-    Size = UDim2.new(1, 0, 1, 0),
-    BackgroundColor3 = Color3.fromRGB(10, 10, 10),
-    BackgroundTransparency = 0.6,  -- Adjust this (0.4-0.7)
-    ZIndex = 1
-})
-
-MakeDrag(MainFrame)sparency = 1,
     Font = Enum.Font.GothamMedium,
     Name = "Title"
   }, {
@@ -1933,8 +1907,4 @@ end
 	return Window
 end
 
-
 return antoralib
-
-
-
