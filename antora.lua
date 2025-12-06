@@ -574,6 +574,13 @@ function antoralib:MakeWindow(Configs)
 		end
 	end;LoadFile()
 	local UISizeX, UISizeY = unpack(antoralib.Save.UISize)
+		-- Create Container (larger for stroke)
+local Container = Create("Frame", ScreenGui, {
+    Size = UDim2.fromOffset(UISizeX + 6, UISizeY + 6),  -- +6px for stroke
+    Position = UDim2.new(0.5, -(UISizeX + 6)/2, 0.5, -(UISizeY + 6)/2),
+    BackgroundTransparency = 1,
+    Name = "Container"
+})
 local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Size = UDim2.fromOffset(UISizeX, UISizeY),
     Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -583,7 +590,7 @@ local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
 
 -- ========== SHARP NEON RED BORDER ==========
 local GlowStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.fromRGB(255, 0, 0),
+    Color = Color3.fromRGB(255, 255, 255),
     Thickness = 3,
     Transparency = 0,
     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -609,7 +616,7 @@ local InnerStroke = Create("UIStroke", MainFrame, {
 
 -- Create inner frame (NO GAP - edge to edge)
 local InnerFrame = Create("Frame", MainFrame, {
-    Size = UDim2.new(1, -2, 1, -2),  -- No gap
+    Size = UDim2.new(1, 0, 1, 0),  -- No gap
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
     BackgroundTransparency = 1,
@@ -1905,6 +1912,7 @@ end
 end
 
 return antoralib
+
 
 
 
