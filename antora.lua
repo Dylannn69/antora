@@ -1018,12 +1018,13 @@ end
 		}), "Theme")
 		
 		local gradient = Instance.new("UIGradient")
-		gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(6, 162, 253)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(9, 53, 253))
-		})
-		gradient.Rotation = 90
-		gradient.Parent = Selected
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+})
+gradient.Rotation = 90
+gradient.Parent = Selected
 		Make("Corner", Selected, UDim.new(0.5, 0))
 		
 		local Container = InsertTheme(Create("ScrollingFrame", {
@@ -1227,12 +1228,13 @@ end
 			}), "Theme")
 			
 			local gradient = Instance.new("UIGradient")
-			gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(6, 162, 253)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(9, 53, 253))
-			})
-			gradient.Rotation = 0
-			gradient.Parent = Toggle
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+})
+gradient.Rotation = 0
+gradient.Parent = Toggle
 			Make("Corner", Toggle, UDim.new(0.5, 0))
 			
 			local WaitClick
@@ -1519,13 +1521,15 @@ end
     AnchorPoint = Vector2.new(0, 0.5)
 					}), "Theme")
 					
+					
 					local gradient = Instance.new("UIGradient")
-					gradient.Color = ColorSequence.new({
-					  ColorSequenceKeypoint.new(0, Color3.fromRGB(6, 162, 253)),
-					  ColorSequenceKeypoint.new(1, Color3.fromRGB(9, 53, 253))
-					})
-					gradient.Rotation = 90
-					gradient.Parent = IsSelected
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+})
+gradient.Rotation = 90
+gradient.Parent = IsSelected
 					Make("Corner", IsSelected, UDim.new(0.5, 0))
 					
 					local OptioneName = InsertTheme(Create("TextLabel", Button, {
@@ -1671,12 +1675,13 @@ end
 			}), "Theme")
 			
 			local gradient = Instance.new("UIGradient")
-			gradient.Color = ColorSequence.new({
-			  ColorSequenceKeypoint.new(0, Color3.fromRGB(6, 162, 253)),
-			  ColorSequenceKeypoint.new(1, Color3.fromRGB(9, 53, 253))
-			})
-			gradient.Rotation = 0
-			gradient.Parent = Indicator
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
+})
+gradient.Rotation = 0
+gradient.Parent = Indicator
 			Make("Corner", Indicator)
 			
 			local SliderIcon = Create("Frame", SliderBar, {
@@ -1939,6 +1944,7 @@ end
 end
 
 return antoralib
+
 
 
 
