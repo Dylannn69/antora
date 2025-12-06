@@ -574,13 +574,6 @@ function antoralib:MakeWindow(Configs)
 		end
 	end;LoadFile()
 	local UISizeX, UISizeY = unpack(antoralib.Save.UISize)
-		-- Create Container (larger for stroke)
-local Container = Create("Frame", ScreenGui, {
-    Size = UDim2.fromOffset(UISizeX + 6, UISizeY + 6),  -- +6px for stroke
-    Position = UDim2.new(0.5, -(UISizeX + 6)/2, 0.5, -(UISizeY + 6)/2),
-    BackgroundTransparency = 1,
-    Name = "Container"
-})
 local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Size = UDim2.fromOffset(UISizeX, UISizeY),
     Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -644,7 +637,6 @@ local Overlay = Create("Frame", BackgroundImage, {
 
 MakeDrag(MainFrame)
 
-local MainCorner = Make("Corner", MainFrame)
 
 -- Put Components in InnerFrame
 local Components = Create("Folder", InnerFrame, {
@@ -1912,6 +1904,7 @@ end
 end
 
 return antoralib
+
 
 
 
