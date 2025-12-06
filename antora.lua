@@ -580,32 +580,65 @@ local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     BackgroundTransparency = 0,
     Name = "Hub"
 }), "Main")
-
--- ========== SHARP NEON RED BORDER ==========
+-- ========== ANIMATED COLOR-SWITCHING NEON BORDER ==========
 local GlowStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.fromRGB(255, 255, 255),
-    Thickness = 3,
+    Color = Color3.fromRGB(255, 0, 0),  -- Start with red
+    Thickness = 4,                       -- Slightly thicker for effect
     Transparency = 0,
     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 })
 
-local StrokeGradient = Create("UIGradient", GlowStroke, {
-    Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 60)),    -- Bright neon
-        ColorSequenceKeypoint.new(0.3, Color3.fromRGB(255, 0, 0)),    -- Neon red
-        ColorSequenceKeypoint.new(0.7, Color3.fromRGB(255, 0, 0)),    -- Neon red
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 0, 0))       -- Darker edge
-    })
-})
+-- Color animation
+task.spawn(function()
+    local colors = {
+        Color3.fromRGB(255, 0, 0),      -- Neon Red
+        Color3.fromRGB(255, 100, 0),    -- Neon Orange
+        Color3.fromRGB(255, 255, 0),    -- Neon Yellow
+        Color3.fromRGB(0, 255, 0),      -- Neon Green
+        Color3.fromRGB(0, 255, 255),    -- Neon Cyan
+        Color3.fromRGB(0, 100, 255),    -- Neon Blue
+        Color3.fromRGB(255, 0, 255),    -- Neon Magenta
+        Color3.fromRGB(255, 0, 100),    -- Neon Pink
+    }
+    
+    local colorIndex = 1
+    while GlowStroke and GlowStroke.Parent do
+        -- Smooth transition between colors
+        local startColor = colors[colorIndex]
+        local endColor = colors[colorIndex % #colors + 1]
+        
+        for i = 0, 1, 0.05 do
+            if not GlowStroke then break end
+            -- Lerp between colors
+            local r = startColor.R + (endColor.R - startColor.R) * i
+            local g = startColor.G + (endColor.G - startColor.G) * i
+            local b = startColor.B + (endColor.B - startColor.B) * i
+            
+            GlowStroke.Color = Color3.new(r, g, b)
+            task.wait(0.05)  -- Speed of transition
+        end
+        
+        colorIndex = colorIndex % #colors + 1
+    end
+end)
 
--- Inner sharp stroke for definition
-local InnerStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.fromRGB(255, 100, 100),
-    Thickness = 3,
-    Transparency = 0,
-    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-})
--- ========== END BORDER ==========
+-- Optional: Add pulsing effect
+task.spawn(function()
+    while GlowStroke and GlowStroke.Parent do
+        for i = 0, 0.3, 0.02 do
+            if not GlowStroke then break end
+            GlowStroke.Transparency = i
+            task.wait(0.05)
+        end
+        for i = 0.3, 0, -0.02 do
+            if not GlowStroke then break end
+            GlowStroke.Transparency = i
+            task.wait(0.05)
+        end
+    end
+end))
+-- ========== END ANIMATED BORDER ==========
+
 
 -- Create inner frame (NO GAP - edge to edge)
 local InnerFrame = Create("Frame", MainFrame, {
@@ -1906,6 +1939,7 @@ end
 end
 
 return antoralib
+
 
 
 
