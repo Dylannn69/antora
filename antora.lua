@@ -21,7 +21,7 @@ local antoralib = {
             ["Color Theme"] = Color3.fromRGB(88, 101, 242),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
             ["Color Dark Text"] = Color3.fromRGB(180, 180, 180),
-            ["antora Icon"] = "rbxassetid://85686657653560"
+            ["antora Icon"] = "Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920"
         }
     },
     Info = {
@@ -1944,6 +1944,7 @@ gradient.Parent = Indicator
 end
 
 return antoralib
+
 
 
 
