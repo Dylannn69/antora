@@ -601,7 +601,7 @@ local StrokeGradient = Create("UIGradient", GlowStroke, {
 
 -- Create inner frame (smaller to show the glow border)
 local InnerFrame = Create("Frame", MainFrame, {
-    Size = UDim2.new(1, -12, 1, -12),  -- 6px border on each side
+    Size = UDim2.new(1, 0, 1, 0),  
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
     BackgroundTransparency = 1,
@@ -1908,3 +1908,4 @@ end
 end
 
 return antoralib
+
