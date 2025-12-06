@@ -707,7 +707,7 @@ local Label = Create("ImageLabel", TopBar, {
     TextSize = 14,
     TextColor3 = Theme["Color Text"],
     BackgroundTransparency = 1,
-    Font = Enum.Font.Nosifer,
+    Font = Enum.Font.Creepster,
     Name = "Title"
   }, {
     InsertTheme(Create("TextLabel", {
@@ -721,7 +721,7 @@ local Label = Create("ImageLabel", TopBar, {
       TextXAlignment = "Left",
       TextYAlignment = "Bottom",
       TextSize = 10,
-      Font = Enum.Font.Nosifer,
+      Font = Enum.Font.Creepster,
       Name = "SubTitle"
     }), "DarkText")
   }), "Text")
@@ -1944,6 +1944,7 @@ gradient.Parent = Indicator
 end
 
 return antoralib
+
 
 
 
