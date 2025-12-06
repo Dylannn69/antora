@@ -25,11 +25,11 @@ local antoralib = {
         }
     },
     Info = {
-        Version = "vai toma no cu redz9999"
+        Version = "DylanV9999"
     },
     Save = {
-        UISize = {590, 400},
-        TabSize = 135,
+        UISize = {540, 350},
+        TabSize = 150,
         Theme = "Classic"
     },
     Settings = {},
@@ -690,8 +690,8 @@ local TopBar = Create("Frame", Components, {
 })
 
 local Label = Create("ImageLabel", TopBar, {
-    Size = UDim2.new(0, 17, 0, 17),
-    Position = UDim2.new(0, 5, 0.5, 0),
+    Size = UDim2.new(0, 24, 0, 24),
+    Position = UDim2.new(0, 8, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
     BackgroundTransparency = 1,
     Image = Theme["antora Icon"]
@@ -699,7 +699,7 @@ local Label = Create("ImageLabel", TopBar, {
 	
 	
   local Title = InsertTheme(Create("TextLabel", TopBar, {
-    Position = UDim2.new(0, 24, 0.5, 0),
+    Position = UDim2.new(0, 32, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
     AutomaticSize = "XY",
     Text = WTitle,
@@ -1944,6 +1944,7 @@ gradient.Parent = Indicator
 end
 
 return antoralib
+
 
 
 
