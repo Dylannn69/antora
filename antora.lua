@@ -636,7 +636,7 @@ task.spawn(function()
             task.wait(0.05)
         end
     end
-end))
+end)
 -- ========== END ANIMATED BORDER ==========
 
 
@@ -1944,6 +1944,7 @@ gradient.Parent = Indicator
 end
 
 return antoralib
+
 
 
 
