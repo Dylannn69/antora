@@ -21,7 +21,7 @@ local antoralib = {
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
             ["Color Dark Text"] = Color3.fromRGB(180, 180, 180),
-            ["antora Icon"] = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=98422026425819"
+            ["antora Icon"] = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=133709037992585"
         }
     },
     Info = {
@@ -47,6 +47,13 @@ local UIScale = ViewportSize.Y / 450
 
 local Settings = antoralib.Settings
 local Flags = antoralib.Flags
+
+-- Define the purple gradient to be used everywhere
+local PURPLE_GRADIENT = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple
+    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),    -- Medium Purple
+    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),   -- Light Pink/Purple
+})
 
 local SetProps, SetChildren, InsertTheme, Create do
 	InsertTheme = function(Instance, Type)
@@ -232,8 +239,6 @@ local GetFlag, SetFlag, CheckFlag do
 			db=true;task.wait(0.1);db=false
 			
 			local Success, Encoded = pcall(function()
-				-- local _Flags = {}
-				-- for _,Flag in pairs(Flags) do _Flags[_] = Flag.Value end
 				return HttpService:JSONEncode(Flags)
 			end)
 			
@@ -306,7 +311,6 @@ local function MakeDrag(Instance)
 		local function Update(Input)
 			local delta = Input.Position - DragStart
 			local Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + delta.X / UIScale, StartPos.Y.Scale, StartPos.Y.Offset + delta.Y / UIScale)
-			-- Instance.Position = Position
 			CreateTween({Instance, "Position", Position, 0.35})
 		end
 		
@@ -398,7 +402,7 @@ end)
 AddEle("Gradient", function(parent, props, ...)
 	local args = {...}
 	local New = InsertTheme(SetProps(Create("UIGradient", parent, {
-		Color = Theme["Color Hub 1"]
+		Color = PURPLE_GRADIENT  -- Changed to use purple gradient
 	}), props), "Gradient")
 	return New
 end)
@@ -438,6 +442,9 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
 		AutomaticSize = "Y",
 		Name = "Option"
 	})Make("Corner", Frame, UDim.new(0, 6))
+	
+	-- Add purple gradient to the button frame
+	Make("Gradient", Frame)
 	
 	LabelHolder = Create("Frame", Frame, {
 		AutomaticSize = "Y",
@@ -530,7 +537,7 @@ function antoralib:SetTheme(NewTheme)
 	Comnection:FireConnection("ThemeChanged", NewTheme)
 	table.foreach(antoralib.Instances, function(_,Val)
 		if Val.Type == "Gradient" then
-			Val.Instance.Color = Theme["Color Hub 1"]
+			Val.Instance.Color = PURPLE_GRADIENT  -- Changed to use purple gradient
 		elseif Val.Type == "Frame" then
 			Val.Instance.BackgroundColor3 = Theme["Color Hub 2"]
 		elseif Val.Type == "Stroke" then
@@ -582,47 +589,42 @@ local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
 }), "Main")
 -- ========== ANIMATED COLOR-SWITCHING NEON BORDER ==========
 local GlowStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.fromRGB(255, 0, 0),  -- Start with red
-    Thickness = 4,                       -- Slightly thicker for effect
+    Color = Color3.fromRGB(176, 96, 244),  -- Start with medium purple
+    Thickness = 4,
     Transparency = 0,
     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 })
 
--- Color animation
+-- Color animation with purple palette
 task.spawn(function()
     local colors = {
-        Color3.fromRGB(255, 0, 0),      -- Neon Red
-        Color3.fromRGB(255, 100, 0),    -- Neon Orange
-        Color3.fromRGB(255, 255, 0),    -- Neon Yellow
-        Color3.fromRGB(0, 255, 0),      -- Neon Green
-        Color3.fromRGB(0, 255, 255),    -- Neon Cyan
-        Color3.fromRGB(0, 100, 255),    -- Neon Blue
-        Color3.fromRGB(255, 0, 255),    -- Neon Magenta
-        Color3.fromRGB(255, 0, 100),    -- Neon Pink
+        Color3.fromRGB(110, 45, 220),      -- Dark Purple
+        Color3.fromRGB(176, 96, 244),      -- Medium Purple
+        Color3.fromRGB(236, 198, 255),     -- Light Pink/Purple
+        Color3.fromRGB(176, 96, 244),      -- Medium Purple
+        Color3.fromRGB(110, 45, 220),      -- Dark Purple
     }
     
     local colorIndex = 1
     while GlowStroke and GlowStroke.Parent do
-        -- Smooth transition between colors
         local startColor = colors[colorIndex]
         local endColor = colors[colorIndex % #colors + 1]
         
         for i = 0, 1, 0.05 do
             if not GlowStroke then break end
-            -- Lerp between colors
             local r = startColor.R + (endColor.R - startColor.R) * i
             local g = startColor.G + (endColor.G - startColor.G) * i
             local b = startColor.B + (endColor.B - startColor.B) * i
             
             GlowStroke.Color = Color3.new(r, g, b)
-            task.wait(0.05)  -- Speed of transition
+            task.wait(0.05)
         end
         
         colorIndex = colorIndex % #colors + 1
     end
 end)
 
--- Optional: Add pulsing effect
+-- Pulsing effect
 task.spawn(function()
     while GlowStroke and GlowStroke.Parent do
         for i = 0, 0.3, 0.02 do
@@ -639,22 +641,23 @@ task.spawn(function()
 end)
 -- ========== END ANIMATED BORDER ==========
 
-
--- Create inner frame (NO GAP - edge to edge)
+-- Create inner frame with purple gradient
 local InnerFrame = Create("Frame", MainFrame, {
-    Size = UDim2.new(1, 0, 1, 0),  -- No gap
+    Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
-    BackgroundTransparency = 1,
+    BackgroundTransparency = 0,
     Name = "InnerFrame"
 })
+-- Add purple gradient to inner frame
+Make("Gradient", InnerFrame)
 
--- Add your image background inside InnerFrame
+-- Add image background with updated asset ID
 local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundTransparency = 1,
-    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=97046630072920",
+    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=133709037992585",
     ScaleType = Enum.ScaleType.Crop,
     ImageColor3 = Color3.fromRGB(255, 255, 255),
     ImageTransparency = 0.05
@@ -664,14 +667,13 @@ local BackgroundImage = Create("ImageLabel", InnerFrame, {
 local Overlay = Create("Frame", BackgroundImage, {
     Size = UDim2.new(1, 0, 1, 0),
     BackgroundColor3 = Color3.fromRGB(10, 10, 10),
-    BackgroundTransparency = 0.6,
+    BackgroundTransparency = 0.5,
     ZIndex = 1
 })
 
 MakeDrag(MainFrame)
 	
-local MainCorner = Make("Corner", MainFrame, UDim.new(0, 0))  -- Square corners
-
+local MainCorner = Make("Corner", MainFrame, UDim.new(0, 0))
 
 -- Put Components in InnerFrame
 local Components = Create("Folder", InnerFrame, {
@@ -694,11 +696,10 @@ local Label = Create("ImageLabel", TopBar, {
     Position = UDim2.new(0, 8, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
     BackgroundTransparency = 1,
-    Image = Theme["antora Icon"]
+    Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=133709037992585"
 })
-	
-	
-  local Title = InsertTheme(Create("TextLabel", TopBar, {
+
+local Title = InsertTheme(Create("TextLabel", TopBar, {
     Position = UDim2.new(0, 32, 0.5, 0),
     AnchorPoint = Vector2.new(0, 0.5),
     AutomaticSize = "XY",
@@ -709,7 +710,7 @@ local Label = Create("ImageLabel", TopBar, {
     BackgroundTransparency = 1,
     Font = Enum.Font.Creepster,
     Name = "Title"
-  }, {
+}, {
     InsertTheme(Create("TextLabel", {
       Size = UDim2.fromScale(0, 1),
       AutomaticSize = "X",
@@ -724,41 +725,41 @@ local Label = Create("ImageLabel", TopBar, {
       Font = Enum.Font.Creepster,
       Name = "SubTitle"
     }), "DarkText")
-  }), "Text")
-	
-	local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-		Size = UDim2.new(0, antoralib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
-		ScrollBarImageColor3 = Theme["Color Theme"],
-		Position = UDim2.new(0, 0, 1, 0),
-		AnchorPoint = Vector2.new(0, 1),
-		ScrollBarThickness = 1.5,
-		BackgroundTransparency = 1,
-		ScrollBarImageTransparency = 0.2,
-		CanvasSize = UDim2.new(),
-		AutomaticCanvasSize = "Y",
-		ScrollingDirection = "Y",
-		BorderSizePixel = 0,
-		Name = "Tab Scroll"
-	}, {
-		Create("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 10),
-			PaddingBottom = UDim.new(0, 10)
-		}), Create("UIListLayout", {
-			Padding = UDim.new(0, 5)
-		})
-	}), "ScrollBar")
-	
-	local Containers = Create("Frame", Components, {
-		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
-		AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, 0, 1, 0),
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Name = "Containers"
-	})
-	
+}), "Text")
+
+local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
+    Size = UDim2.new(0, antoralib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
+    ScrollBarImageColor3 = Theme["Color Theme"],
+    Position = UDim2.new(0, 0, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    ScrollBarThickness = 1.5,
+    BackgroundTransparency = 1,
+    ScrollBarImageTransparency = 0.2,
+    CanvasSize = UDim2.new(),
+    AutomaticCanvasSize = "Y",
+    ScrollingDirection = "Y",
+    BorderSizePixel = 0,
+    Name = "Tab Scroll"
+}, {
+    Create("UIPadding", {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    }), Create("UIListLayout", {
+        Padding = UDim.new(0, 5)
+    })
+}), "ScrollBar")
+
+local Containers = Create("Frame", Components, {
+    Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    ClipsDescendants = true,
+    Name = "Containers"
+})
+
 local ButtonsFolder = Create("Folder", TopBar, {
 	Name = "Buttons"
 })
@@ -934,6 +935,8 @@ end
 			ButtonCount = ButtonCount + 1
 			local Button = Make("Button", ButtonsHolder)
 			Make("Corner", Button)
+			-- Add purple gradient to dialog buttons
+			Make("Gradient", Button)
 			SetProps(Button, {
 				Text = Name,
 				Font = Enum.Font.GothamBold,
@@ -943,7 +946,7 @@ end
 			
 			for _,Button in pairs(ButtonsHolder:GetChildren()) do
 				if Button:IsA("TextButton") then
-					Button.Size = UDim2.new(1 / ButtonCount, -(((ButtonCount - 1) * 20) / ButtonCount), 0, 32) -- Fluent Library :)
+					Button.Size = UDim2.new(1 / ButtonCount, -(((ButtonCount - 1) * 20) / ButtonCount), 0, 32)
 				end
 			end
 			Button.Activated:Connect(Dialog.Close)
@@ -986,6 +989,8 @@ end
 		local TabSelect = Make("Button", MainScroll, {
 			Size = UDim2.new(1, 0, 0, 24)
 		})Make("Corner", TabSelect)
+		-- Add purple gradient to tab buttons
+		Make("Gradient", TabSelect)
 		
 		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
 			Size = UDim2.new(1, TIcon and -25 or -15, 1),
@@ -1010,21 +1015,17 @@ end
 		}), "Text")
 		
 		local Selected = InsertTheme(Create("Frame", TabSelect, {
-    Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
-    Position = UDim2.new(0, 1, 0.5),
-    AnchorPoint = Vector2.new(0, 0.5),
-    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    BackgroundTransparency = FirstTab and 1 or 0
+			Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
+			Position = UDim2.new(0, 1, 0.5),
+			AnchorPoint = Vector2.new(0, 0.5),
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundTransparency = FirstTab and 1 or 0
 		}), "Theme")
 		
 		local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-})
-gradient.Rotation = 90
-gradient.Parent = Selected
+		gradient.Color = PURPLE_GRADIENT
+		gradient.Rotation = 90
+		gradient.Parent = Selected
 		Make("Corner", Selected, UDim.new(0.5, 0))
 		
 		local Container = InsertTheme(Create("ScrollingFrame", {
@@ -1220,21 +1221,17 @@ gradient.Parent = Selected
 			})
 			
 			local Toggle = InsertTheme(Create("Frame", Slider, {
-    Size = UDim2.new(0, 12, 0, 12),
-    Position = UDim2.new(0, 0, 0.5),
-    AnchorPoint = Vector2.new(0, 0.5),
-    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    BackgroundTransparency = 1
+				Size = UDim2.new(0, 12, 0, 12),
+				Position = UDim2.new(0, 0, 0.5),
+				AnchorPoint = Vector2.new(0, 0.5),
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				BackgroundTransparency = 1
 			}), "Theme")
 			
 			local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-})
-gradient.Rotation = 0
-gradient.Parent = Toggle
+			gradient.Color = PURPLE_GRADIENT
+			gradient.Rotation = 0
+			gradient.Parent = Toggle
 			Make("Corner", Toggle, UDim.new(0.5, 0))
 			
 			local WaitClick
@@ -1387,23 +1384,23 @@ gradient.Parent = Toggle
 			end
 			
 			local function Minimize()
-    if WaitClick then return end
-    WaitClick = true
+				if WaitClick then return end
+				WaitClick = true
 
-    if NoClickFrame.Visible then
-        Arrow.Image = "rbxassetid://10709791523"
-        CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
-        CreateTween({DropFrame, "Size", UDim2.new(0, 152, 0, 0), 0.2, true})
-        NoClickFrame.Visible = false
-    else
-        NoClickFrame.Visible = true
-        Arrow.Image = "rbxassetid://10709790948"
-        CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
-        CreateTween({DropFrame, "Size", GetFrameSize(), 0.2, true})
-    end
+				if NoClickFrame.Visible then
+					Arrow.Image = "rbxassetid://10709791523"
+					CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
+					CreateTween({DropFrame, "Size", UDim2.new(0, 152, 0, 0), 0.2, true})
+					NoClickFrame.Visible = false
+				else
+					NoClickFrame.Visible = true
+					Arrow.Image = "rbxassetid://10709790948"
+					CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
+					CreateTween({DropFrame, "Size", GetFrameSize(), 0.2, true})
+				end
 
-    WaitClick = false
-end
+				WaitClick = false
+			end
 			
 			local function CalculatePos()
 				local FramePos = SelectedFrame.AbsolutePosition
@@ -1514,22 +1511,17 @@ end
 					})Make("Corner", Button, UDim.new(0, 4))
 					
 					local IsSelected = InsertTheme(Create("Frame", Button, {
-    Position = UDim2.new(0, 1, 0.5),
-    Size = UDim2.new(0, 4, 0, 4),
-    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    BackgroundTransparency = 1,
-    AnchorPoint = Vector2.new(0, 0.5)
+						Position = UDim2.new(0, 1, 0.5),
+						Size = UDim2.new(0, 4, 0, 4),
+						BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+						BackgroundTransparency = 1,
+						AnchorPoint = Vector2.new(0, 0.5)
 					}), "Theme")
 					
-					
 					local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-})
-gradient.Rotation = 90
-gradient.Parent = IsSelected
+					gradient.Color = PURPLE_GRADIENT
+					gradient.Rotation = 90
+					gradient.Parent = IsSelected
 					Make("Corner", IsSelected, UDim.new(0.5, 0))
 					
 					local OptioneName = InsertTheme(Create("TextLabel", Button, {
@@ -1669,19 +1661,15 @@ gradient.Parent = IsSelected
 			}), "Stroke")Make("Corner", SliderBar)
 			
 			local Indicator = InsertTheme(Create("Frame", SliderBar, {
-    Size = UDim2.fromScale(0.3, 1),
-    BorderSizePixel = 0,
-    BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				Size = UDim2.fromScale(0.3, 1),
+				BorderSizePixel = 0,
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			}), "Theme")
 			
 			local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 150, 150)),  -- Light pinkish-red
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 0)),    -- Pure red
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 0, 0))       -- Dark red
-})
-gradient.Rotation = 0
-gradient.Parent = Indicator
+			gradient.Color = PURPLE_GRADIENT
+			gradient.Rotation = 0
+			gradient.Parent = Indicator
 			Make("Corner", Indicator)
 			
 			local SliderIcon = Create("Frame", SliderBar, {
@@ -1700,7 +1688,7 @@ gradient.Parent = Indicator
 				TextColor3 = Theme["Color Text"],
 				Font = Enum.Font.GothamMedium,
 				TextSize = 12
-			}), "Text")
+				}), "Text")
 			
 			local UIScale = Create("UIScale", LabelVal)
 			
@@ -1855,7 +1843,7 @@ gradient.Parent = Indicator
 			local InviteLabel = Create("TextLabel", InviteHolder, {
 				Size = UDim2.new(1, 0, 0, 15),
 				Position = UDim2.new(0, 5),
-				TextColor3 = Color3.fromRGB(40, 150, 255),
+				TextColor3 = Color3.fromRGB(176, 96, 244),
 				Font = Enum.Font.GothamBold,
 				TextXAlignment = "Left",
 				BackgroundTransparency = 1,
@@ -1869,6 +1857,8 @@ gradient.Parent = Indicator
 				Position = UDim2.new(0, 0, 1),
 				BackgroundColor3 = Theme["Color Hub 2"]
 			}), "Frame")Make("Corner", FrameHolder)
+			-- Add purple gradient to discord frame
+			Make("Gradient", FrameHolder)
 			
 			local ImageLabel = Create("ImageLabel", FrameHolder, {
 				Size = UDim2.new(0, 30, 0, 30),
@@ -1909,8 +1899,10 @@ gradient.Parent = Indicator
 				Font = Enum.Font.GothamBold,
 				TextSize = 12,
 				TextColor3 = Color3.fromRGB(220, 220, 220),
-				BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+				BackgroundColor3 = Color3.fromRGB(176, 96, 244)
 			})Make("Corner", JoinButton, UDim.new(0, 5))
+			-- Add purple gradient to join button
+			Make("Gradient", JoinButton)
 			
 			local ClickDelay
 			JoinButton.Activated:Connect(function()
@@ -1925,7 +1917,7 @@ gradient.Parent = Indicator
 				})task.wait(5)
 				SetProps(JoinButton, {
 					Text = "Join",
-					BackgroundColor3 = Color3.fromRGB(50, 150, 50),
+					BackgroundColor3 = Color3.fromRGB(176, 96, 244),
 					TextColor3 = Color3.fromRGB(220, 220, 220)
 				})ClickDelay = false
 			end)
@@ -1944,22 +1936,3 @@ gradient.Parent = Indicator
 end
 
 return antoralib
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
