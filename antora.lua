@@ -48,7 +48,7 @@ local UIScale = ViewportSize.Y / 450
 local Settings = antoralib.Settings
 local Flags = antoralib.Flags
 
--- Purple gradient (vertical by default)
+-- Purple gradient (bottom → top)
 local PURPLE_GRADIENT = ColorSequence.new({
     ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple
     ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),    -- Medium Purple
@@ -401,10 +401,10 @@ end)
 
 AddEle("Gradient", function(parent, props, ...)
 	local args = {...}
-	-- Set rotation to 0 for vertical gradient
+	-- Set rotation to 180 for bottom → top
 	local New = InsertTheme(SetProps(Create("UIGradient", parent, {
 		Color = PURPLE_GRADIENT,
-		Rotation = 0  -- Vertical
+		Rotation = 180  -- bottom to top
 	}), props), "Gradient")
 	return New
 end)
@@ -445,8 +445,7 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
 		Name = "Option"
 	})Make("Corner", Frame, UDim.new(0, 6))
 	
-	-- Add purple gradient to button frame (vertical)
-	Make("Gradient", Frame)
+	Make("Gradient", Frame)  -- bottom → top
 	
 	LabelHolder = Create("Frame", Frame, {
 		AutomaticSize = "Y",
@@ -536,11 +535,11 @@ function antoralib:SetTheme(NewTheme)
 	SaveJson("Antora Library.json", antoralib.Save)
 	Theme = antoralib.Themes[NewTheme]
 	
-	Comnection:FireConnection("ThemeChanged", NewTheme)
+	Connection:FireConnection("ThemeChanged", NewTheme)
 	table.foreach(antoralib.Instances, function(_,Val)
 		if Val.Type == "Gradient" then
 			Val.Instance.Color = PURPLE_GRADIENT
-			Val.Instance.Rotation = 0  -- Ensure vertical
+			Val.Instance.Rotation = 180  -- bottom → top
 		elseif Val.Type == "Frame" then
 			Val.Instance.BackgroundColor3 = Theme["Color Hub 2"]
 		elseif Val.Type == "Stroke" then
@@ -591,15 +590,15 @@ local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Name = "Hub"
 }), "Main")
 
--- UI Stroke: White, static, no animation
+-- White static stroke (no animation)
 local GlowStroke = Create("UIStroke", MainFrame, {
-    Color = Color3.new(1, 1, 1),  -- White
+    Color = Color3.new(1, 1, 1),
     Thickness = 2,
     Transparency = 0,
     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 })
 
--- Create inner frame with vertical purple gradient
+-- Inner frame with bottom→top purple gradient
 local InnerFrame = Create("Frame", MainFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -607,10 +606,9 @@ local InnerFrame = Create("Frame", MainFrame, {
     BackgroundTransparency = 0,
     Name = "InnerFrame"
 })
--- Add purple gradient to inner frame (vertical)
-Make("Gradient", InnerFrame)
+Make("Gradient", InnerFrame)  -- bottom → top
 
--- Add background image with full transparency (transparent)
+-- Background image: fully transparent to blend
 local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Size = UDim2.new(1, 0, 1, 0),
     Position = UDim2.new(0, 0, 0, 0),
@@ -618,10 +616,10 @@ local BackgroundImage = Create("ImageLabel", InnerFrame, {
     Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=133709037992585",
     ScaleType = Enum.ScaleType.Crop,
     ImageColor3 = Color3.fromRGB(255, 255, 255),
-    ImageTransparency = 1   -- Fully transparent to blend
+    ImageTransparency = 1   -- fully transparent
 })
 
--- Dark overlay (can be removed but we'll keep it subtle)
+-- Subtle dark overlay (optional, can be removed)
 local Overlay = Create("Frame", BackgroundImage, {
     Size = UDim2.new(1, 0, 1, 0),
     BackgroundColor3 = Color3.fromRGB(10, 10, 10),
@@ -633,12 +631,10 @@ MakeDrag(MainFrame)
 	
 local MainCorner = Make("Corner", MainFrame, UDim.new(0, 0))
 
--- Put Components in InnerFrame
 local Components = Create("Folder", InnerFrame, {
     Name = "Components"
 })
 
--- Put DropdownHolder in InnerFrame
 local DropdownHolder = Create("Folder", InnerFrame, {
     Name = "Dropdown"
 })
@@ -853,7 +849,7 @@ end
 				BackgroundTransparency = 1,
 				TextWrapped = true
 			}), "DarkText")
-		})Make("Gradient", Frame, {Rotation = 0})  -- Vertical gradient
+		})Make("Gradient", Frame, {Rotation = 180})  -- bottom → top
 		Make("Corner", Frame)
 		
 		local ButtonsHolder = Create("Frame", Frame, {
@@ -894,7 +890,7 @@ end
 			ButtonCount = ButtonCount + 1
 			local Button = Make("Button", ButtonsHolder)
 			Make("Corner", Button)
-			Make("Gradient", Button)  -- Vertical gradient on dialog buttons
+			Make("Gradient", Button)  -- bottom → top
 			SetProps(Button, {
 				Text = Name,
 				Font = Enum.Font.GothamBold,
@@ -947,7 +943,7 @@ end
 		local TabSelect = Make("Button", MainScroll, {
 			Size = UDim2.new(1, 0, 0, 24)
 		})Make("Corner", TabSelect)
-		Make("Gradient", TabSelect)  -- Vertical gradient on tabs
+		Make("Gradient", TabSelect)  -- bottom → top
 		
 		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
 			Size = UDim2.new(1, TIcon and -25 or -15, 1),
@@ -981,7 +977,7 @@ end
 		
 		local gradient = Instance.new("UIGradient")
 		gradient.Color = PURPLE_GRADIENT
-		gradient.Rotation = 0  -- Vertical
+		gradient.Rotation = 180  -- bottom → top
 		gradient.Parent = Selected
 		Make("Corner", Selected, UDim.new(0.5, 0))
 		
@@ -1187,7 +1183,7 @@ end
 			
 			local gradient = Instance.new("UIGradient")
 			gradient.Color = PURPLE_GRADIENT
-			gradient.Rotation = 0  -- Vertical
+			gradient.Rotation = 180  -- bottom → top
 			gradient.Parent = Toggle
 			Make("Corner", Toggle, UDim.new(0.5, 0))
 			
@@ -1289,7 +1285,7 @@ end
 				ClipsDescendants = true,
 				Active = true
 			})Make("Corner", DropFrame)Make("Stroke", DropFrame)
-			Make("Gradient", DropFrame, {Rotation = 0})  -- Vertical gradient on dropdown
+			Make("Gradient", DropFrame, {Rotation = 180})  -- bottom → top
 			
 			local ScrollFrame = InsertTheme(Create("ScrollingFrame", DropFrame, {
 				ScrollBarImageColor3 = Theme["Color Theme"],
@@ -1478,7 +1474,7 @@ end
 					
 					local gradient = Instance.new("UIGradient")
 					gradient.Color = PURPLE_GRADIENT
-					gradient.Rotation = 0  -- Vertical
+					gradient.Rotation = 180  -- bottom → top
 					gradient.Parent = IsSelected
 					Make("Corner", IsSelected, UDim.new(0.5, 0))
 					
@@ -1626,7 +1622,7 @@ end
 			
 			local gradient = Instance.new("UIGradient")
 			gradient.Color = PURPLE_GRADIENT
-			gradient.Rotation = 0  -- Vertical
+			gradient.Rotation = 180  -- bottom → top
 			gradient.Parent = Indicator
 			Make("Corner", Indicator)
 			
@@ -1815,7 +1811,7 @@ end
 				Position = UDim2.new(0, 0, 1),
 				BackgroundColor3 = Theme["Color Hub 2"]
 			}), "Frame")Make("Corner", FrameHolder)
-			Make("Gradient", FrameHolder)  -- Vertical gradient
+			Make("Gradient", FrameHolder)  -- bottom → top
 			
 			local ImageLabel = Create("ImageLabel", FrameHolder, {
 				Size = UDim2.new(0, 30, 0, 30),
@@ -1858,7 +1854,7 @@ end
 				TextColor3 = Color3.fromRGB(220, 220, 220),
 				BackgroundColor3 = Color3.fromRGB(176, 96, 244)
 			})Make("Corner", JoinButton, UDim.new(0, 5))
-			Make("Gradient", JoinButton)  -- Vertical gradient
+			Make("Gradient", JoinButton)  -- bottom → top
 			
 			local ClickDelay
 			JoinButton.Activated:Connect(function()
