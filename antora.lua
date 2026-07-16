@@ -298,44 +298,7 @@ local function CreateTween(Configs)
     return Tween
 end
 
-local function MakeDrag(Instance)
-    task.spawn(function()
-        SetProps(Instance, {
-            Active = true
-        })
-
-        local dragging = false
-        local dragStart, startPos
-
-        Instance.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = Input.Position
-                startPos = Instance.Position
-            end
-        end)
-
-        Instance.InputEnded:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-                dragging = false
-            end
-        end)
-
-        Instance.InputChanged:Connect(function(Input)
-            if dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then
-                local delta = Input.Position - dragStart
-                local Position = UDim2.new(
-                    startPos.X.Scale,
-                    startPos.X.Offset + delta.X / UIScale,
-                    startPos.Y.Scale,
-                    startPos.Y.Offset + delta.Y / UIScale
-                )
-                CreateTween({Instance, "Position", Position, 0.35})
-            end
-        end)
-    end)
-    return Instance
-end
+-- NOTE: Drag is completely removed – no MakeDrag function is called.
 
 local function VerifyTheme(Theme)
     for name,_ in pairs(antoralib.Themes) do
@@ -578,7 +541,7 @@ function antoralib:SetScale(NewScale)
 end
 
 -- ============================
---  MakeWindow with your UI template (side panel OUTSIDE main)
+--  MakeWindow with your UI template (NO DRAG)
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -668,8 +631,7 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    MakeDrag(MainPanel.Frame)
-    MakeDrag(SidePanel.Frame)
+    -- NO DRAG – removed MakeDrag calls
 
     -- Header
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
@@ -1936,13 +1898,13 @@ function antoralib:MakeWindow(Configs)
         return Tab
     end
 
-    -- ========== FORCE UI TO BE VISIBLE ON STARTUP ==========
+    -- Ensure the UI starts fully visible (not minimized)
+    minimized = false
+    MinimizedFrame.Visible = false
     MainPanel.Frame.Visible = true
     MainPanel.Shadow.Visible = true
     SidePanel.Frame.Visible = true
     SidePanel.Shadow.Visible = true
-    MinimizedFrame.Visible = false
-    minimized = false
 
     return Window
 end
