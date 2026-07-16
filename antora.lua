@@ -361,6 +361,22 @@ local function Make(Ele, Instance, props, ...)
     return Element
 end
 
+-- Helper: add marble texture overlay to any frame
+local function AddMarbleOverlay(parent, cornerRadius, transparency)
+    cornerRadius = cornerRadius or UDim.new(0, 6)
+    transparency = transparency or 0.6
+    local overlay = Create("ImageLabel", parent, {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png",
+        ScaleType = Enum.ScaleType.Stretch,
+        ImageTransparency = transparency,
+        ZIndex = 0
+    })
+    Make("Corner", overlay, cornerRadius)
+    return overlay
+end
+
 AddEle("Corner", function(parent, CornerRadius)
     local New = SetProps(Create("UICorner", parent, {
         CornerRadius = CornerRadius or UDim.new(0, 17)
@@ -442,9 +458,10 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
         Size = UDim2.new(1, 0, 0, 25),
         AutomaticSize = "Y",
         Name = "Option"
-    })Make("Corner", Frame, UDim.new(0, 6))
-
+    })
+    Make("Corner", Frame, UDim.new(0, 6))
     Make("Gradient", Frame)  -- bottom → top
+    AddMarbleOverlay(Frame, UDim.new(0, 6))  -- marble overlay
 
     LabelHolder = Create("Frame", Frame, {
         AutomaticSize = "Y",
@@ -855,8 +872,10 @@ function antoralib:MakeWindow(Configs)
                 BackgroundTransparency = 1,
                 TextWrapped = true
             }), "DarkText")
-        })Make("Gradient", Frame, {Rotation = 180})  -- bottom → top
+        })
+        Make("Gradient", Frame, {Rotation = 180})  -- bottom → top
         Make("Corner", Frame)
+        AddMarbleOverlay(Frame, UDim.new(0, 6))  -- marble overlay on dialog background
 
         local ButtonsHolder = Create("Frame", Frame, {
             Size = UDim2.fromScale(1, 0.35),
@@ -897,6 +916,7 @@ function antoralib:MakeWindow(Configs)
             local Button = Make("Button", ButtonsHolder)
             Make("Corner", Button)
             Make("Gradient", Button)  -- bottom → top
+            AddMarbleOverlay(Button, UDim.new(0, 6))  -- marble overlay on dialog buttons
             SetProps(Button, {
                 Text = Name,
                 Font = Enum.Font.GothamBold,
@@ -948,8 +968,10 @@ function antoralib:MakeWindow(Configs)
 
         local TabSelect = Make("Button", MainScroll, {
             Size = UDim2.new(1, 0, 0, 24)
-        })Make("Corner", TabSelect)
+        })
+        Make("Corner", TabSelect)
         Make("Gradient", TabSelect)  -- bottom → top
+        AddMarbleOverlay(TabSelect, UDim.new(0, 6))  -- marble overlay on tab buttons
 
         local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
             Size = UDim2.new(1, TIcon and -25 or -15, 1),
@@ -1290,8 +1312,11 @@ function antoralib:MakeWindow(Configs)
                 Name = "DropdownFrame",
                 ClipsDescendants = true,
                 Active = true
-            })Make("Corner", DropFrame)Make("Stroke", DropFrame)
+            })
+            Make("Corner", DropFrame)
+            Make("Stroke", DropFrame)
             Make("Gradient", DropFrame, {Rotation = 180})  -- bottom → top
+            AddMarbleOverlay(DropFrame, UDim.new(0, 6))  -- marble overlay on dropdown
 
             local ScrollFrame = InsertTheme(Create("ScrollingFrame", DropFrame, {
                 ScrollBarImageColor3 = Theme["Color Theme"],
@@ -1816,8 +1841,10 @@ function antoralib:MakeWindow(Configs)
                 AnchorPoint = Vector2.new(0, 1),
                 Position = UDim2.new(0, 0, 1),
                 BackgroundColor3 = Theme["Color Hub 2"]
-            }), "Frame")Make("Corner", FrameHolder)
+            }), "Frame")
+            Make("Corner", FrameHolder)
             Make("Gradient", FrameHolder)  -- bottom → top
+            AddMarbleOverlay(FrameHolder, UDim.new(0, 6))  -- marble overlay on discord frame
 
             local ImageLabel = Create("ImageLabel", FrameHolder, {
                 Size = UDim2.new(0, 30, 0, 30),
@@ -1861,6 +1888,7 @@ function antoralib:MakeWindow(Configs)
                 BackgroundColor3 = Color3.fromRGB(176, 96, 244)
             })Make("Corner", JoinButton, UDim.new(0, 5))
             Make("Gradient", JoinButton)  -- bottom → top
+            AddMarbleOverlay(JoinButton, UDim.new(0, 5))  -- marble overlay on join button
 
             local ClickDelay
             JoinButton.Activated:Connect(function()
