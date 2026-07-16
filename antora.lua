@@ -21,7 +21,7 @@ local antoralib = {
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
             ["Color Dark Text"] = Color3.fromRGB(180, 180, 180),
-            ["antora Icon"] = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png"
+            ["antora Icon"] = "https://www.roblox.com/asset-thumbnail/image?assetId=76200217707529&width=678&height=810&format=png"
         }
     },
     Info = {
