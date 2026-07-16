@@ -298,36 +298,40 @@ local function CreateTween(Configs)
     return Tween
 end
 
+-- ========== FIXED DRAG FUNCTION ==========
 local function MakeDrag(Instance)
     task.spawn(function()
-        -- Only set Active = true; AutoButtonColor is not valid for Frame
         SetProps(Instance, {
             Active = true
         })
 
-        local DragStart, StartPos, InputOn
-
-        local function Update(Input)
-            local delta = Input.Position - DragStart
-            local Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + delta.X / UIScale, StartPos.Y.Scale, StartPos.Y.Offset + delta.Y / UIScale)
-            CreateTween({Instance, "Position", Position, 0.35})
-        end
-
-        Instance.MouseButton1Down:Connect(function()
-            InputOn = true
-        end)
+        local dragging = false
+        local dragStart, startPos
 
         Instance.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-                StartPos = Instance.Position
-                DragStart = Input.Position
+                dragging = true
+                dragStart = Input.Position
+                startPos = Instance.Position
+            end
+        end)
 
-                while UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do RunService.Heartbeat:Wait()
-                    if InputOn then
-                        Update(Input)
-                    end
-                end
-                InputOn = false
+        Instance.InputEnded:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                dragging = false
+            end
+        end)
+
+        Instance.InputChanged:Connect(function(Input)
+            if dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then
+                local delta = Input.Position - dragStart
+                local Position = UDim2.new(
+                    startPos.X.Scale,
+                    startPos.X.Offset + delta.X / UIScale,
+                    startPos.Y.Scale,
+                    startPos.Y.Offset + delta.Y / UIScale
+                )
+                CreateTween({Instance, "Position", Position, 0.35})
             end
         end)
     end)
