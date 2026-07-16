@@ -298,7 +298,6 @@ local function CreateTween(Configs)
     return Tween
 end
 
--- ========== FIXED DRAG FUNCTION ==========
 local function MakeDrag(Instance)
     task.spawn(function()
         SetProps(Instance, {
@@ -1936,6 +1935,14 @@ function antoralib:MakeWindow(Configs)
 
         return Tab
     end
+
+    -- ========== FORCE UI TO BE VISIBLE ON STARTUP ==========
+    MainPanel.Frame.Visible = true
+    MainPanel.Shadow.Visible = true
+    SidePanel.Frame.Visible = true
+    SidePanel.Shadow.Visible = true
+    MinimizedFrame.Visible = false
+    minimized = false
 
     return Window
 end
