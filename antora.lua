@@ -298,7 +298,7 @@ local function CreateTween(Configs)
     return Tween
 end
 
--- NOTE: Drag is completely removed – no MakeDrag function is called.
+-- No drag function – it's been removed entirely.
 
 local function VerifyTheme(Theme)
     for name,_ in pairs(antoralib.Themes) do
@@ -541,7 +541,7 @@ function antoralib:SetScale(NewScale)
 end
 
 -- ============================
---  MakeWindow with your UI template (NO DRAG)
+--  MakeWindow with your UI template (NO DRAG, STARTUP LOCK)
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -589,6 +589,7 @@ function antoralib:MakeWindow(Configs)
             BackgroundColor3 = Color3.fromRGB(255,255,255),
             BackgroundTransparency = 0.15,
             BorderSizePixel = 0
+            -- IMPORTANT: No Active = true, no drag‑related properties
         })
         Make("Corner", panel.Frame, UDim.new(0, cornerRadius))
 
@@ -631,7 +632,7 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- NO DRAG – removed MakeDrag calls
+    -- NO DRAG – no MakeDrag calls, no extra input connections.
 
     -- Header
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
@@ -724,6 +725,7 @@ function antoralib:MakeWindow(Configs)
 
     -- State
     local minimized = false
+    local creationTime = tick()  -- for startup lock
 
     -- Restore function
     local function Restore()
@@ -741,8 +743,11 @@ function antoralib:MakeWindow(Configs)
         TweenService:Create(SidePanel.Shadow, tweenInfo, {Size = SideSize, Position = SidePos + UDim2.new(0,0,0,8)}):Play()
     end
 
-    -- Minimize function
+    -- Minimize function with startup lock
     local function Minimize()
+        -- Ignore clicks during the first 0.5 seconds to avoid accidental minimisation on launch
+        if tick() - creationTime < 0.5 then return end
+
         minimized = true
         local targetPos = UDim2.new(1, -40, 0, 40)
         local targetSize = UDim2.fromScale(0.05, 0.05)
@@ -767,7 +772,7 @@ function antoralib:MakeWindow(Configs)
     -- Restore click on minimized icon
     MinimizedFrame.MouseButton1Click:Connect(Restore)
 
-    -- Close button minimizes
+    -- Close button minimizes (with startup protection)
     CloseButton.MouseButton1Click:Connect(Minimize)
 
     -- Tab scrolling frame (side)
