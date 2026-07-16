@@ -48,11 +48,10 @@ local UIScale = ViewportSize.Y / 450
 local Settings = antoralib.Settings
 local Flags = antoralib.Flags
 
--- Purple gradient (bottom → top, but your template uses Rotation=90, we'll keep that for consistency)
 local PURPLE_GRADIENT = ColorSequence.new({
-    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple
-    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),    -- Medium Purple
-    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),   -- Light Pink/Purple
+    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),
+    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),
+    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),
 })
 
 local SetProps, SetChildren, InsertTheme, Create do
@@ -301,9 +300,9 @@ end
 
 local function MakeDrag(Instance)
     task.spawn(function()
+        -- Only set Active = true; AutoButtonColor is not valid for Frame
         SetProps(Instance, {
-            Active = true,
-            AutoButtonColor = false
+            Active = true
         })
 
         local DragStart, StartPos, InputOn
@@ -361,7 +360,6 @@ local function Make(Ele, Instance, props, ...)
     return Element
 end
 
--- Helper: add marble texture overlay to any frame
 local function AddMarbleOverlay(parent, cornerRadius, transparency)
     cornerRadius = cornerRadius or UDim.new(0, 6)
     transparency = transparency or 0.6
@@ -419,7 +417,7 @@ AddEle("Gradient", function(parent, props, ...)
     local args = {...}
     local New = InsertTheme(SetProps(Create("UIGradient", parent, {
         Color = PURPLE_GRADIENT,
-        Rotation = 180  -- bottom → top (but your template uses 90, we'll keep 180 for consistency)
+        Rotation = 180
     }), props), "Gradient")
     return New
 end)
@@ -523,7 +521,6 @@ local function GetColor(Instance)
     return ""
 end
 
--- /////////// --
 function antoralib:GetIcon(index)
     if type(index) ~= "string" or index:find("rbxassetid://") or #index == 0 then
         return index
@@ -602,12 +599,10 @@ function antoralib:MakeWindow(Configs)
         end
     end; LoadFile()
 
-    -- Helper to create a panel with shadow, gradient, marble, and stroke
     local function CreatePanel(name, anchorPos, size, cornerRadius, zIndex)
         local panel = {}
         cornerRadius = cornerRadius or 20
 
-        -- Shadow
         panel.Shadow = Create("Frame", ScreenGui, {
             Name = name .. "Shadow",
             AnchorPoint = Vector2.new(0.5, 0.5),
@@ -620,7 +615,6 @@ function antoralib:MakeWindow(Configs)
         })
         Make("Corner", panel.Shadow, UDim.new(0, cornerRadius))
 
-        -- Main frame
         panel.Frame = Create("Frame", ScreenGui, {
             Name = name,
             AnchorPoint = Vector2.new(0.5, 0.5),
@@ -632,7 +626,6 @@ function antoralib:MakeWindow(Configs)
         })
         Make("Corner", panel.Frame, UDim.new(0, cornerRadius))
 
-        -- White stroke
         local stroke = Create("UIStroke", panel.Frame, {
             Color = Color3.fromRGB(255,255,255),
             Thickness = 2,
@@ -640,13 +633,11 @@ function antoralib:MakeWindow(Configs)
             ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         })
 
-        -- Gradient (Rotation = 90 to match your template)
         local gradient = Create("UIGradient", panel.Frame, {
             Rotation = 90,
             Color = PURPLE_GRADIENT
         })
 
-        -- Marble texture
         local marble = Create("ImageLabel", panel.Frame, {
             Size = UDim2.fromScale(1,1),
             BackgroundTransparency = 1,
@@ -659,31 +650,25 @@ function antoralib:MakeWindow(Configs)
         return panel
     end
 
-    -- Layout parameters (matching your template)
     local MainWidth = 0.40
     local MainHeight = 0.75
     local SideWidth = 0.15
     local SideHeight = 0.75
-    local Gap = 0.025  -- gap between side and main
+    local Gap = 0.025
 
-    -- Main panel (centre)
     local MainSize = UDim2.fromScale(MainWidth, MainHeight)
     local MainPos = UDim2.fromScale(0.5, 0.54)
     local MainPanel = CreatePanel("Main", MainPos, MainSize, 20, 1)
 
-    -- Side panel (left of Main)
     local SideX = (0.5 - MainWidth/2) - Gap - SideWidth/2
     local SidePos = UDim2.new(SideX, 0, 0.54, 0)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- Make both panels draggable together
     MakeDrag(MainPanel.Frame)
-    -- Also drag side when main is dragged (we'll connect via a simple way: we can copy the drag logic to side, but for simplicity we'll allow separate drags or group)
-    -- To keep it simple, we'll make side draggable too (they move independently, but that's fine)
     MakeDrag(SidePanel.Frame)
 
-    -- HEADER (only on main panel)
+    -- Header
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
         Name = "HeaderShadow",
         AnchorPoint = Vector2.new(0.5, 0),
@@ -730,7 +715,7 @@ function antoralib:MakeWindow(Configs)
         TextColor3 = Color3.fromRGB(255,255,255)
     })
 
-    -- CLOSE/MINIMIZE BUTTON
+    -- Close button
     local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -751,7 +736,7 @@ function antoralib:MakeWindow(Configs)
         CloseButton:TweenSize(UDim2.fromOffset(56, 56), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
     end)
 
-    -- MINIMIZED FRAME (restore button)
+    -- Minimized frame
     local MinimizedFrame = Create("ImageButton", ScreenGui, {
         Name = "MinimizedFrame",
         AnchorPoint = Vector2.new(1, 0),
@@ -772,8 +757,12 @@ function antoralib:MakeWindow(Configs)
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     })
 
-    -- Restore
-    MinimizedFrame.MouseButton1Click:Connect(function()
+    -- State
+    local minimized = false
+
+    -- Restore function
+    local function Restore()
+        minimized = false
         MinimizedFrame.Visible = false
         MainPanel.Frame.Visible = true
         MainPanel.Shadow.Visible = true
@@ -785,10 +774,11 @@ function antoralib:MakeWindow(Configs)
         TweenService:Create(MainPanel.Shadow, tweenInfo, {Size = MainSize, Position = MainPos + UDim2.new(0,0,0,8)}):Play()
         TweenService:Create(SidePanel.Frame, tweenInfo, {Size = SideSize, Position = SidePos}):Play()
         TweenService:Create(SidePanel.Shadow, tweenInfo, {Size = SideSize, Position = SidePos + UDim2.new(0,0,0,8)}):Play()
-    end)
+    end
 
     -- Minimize function
     local function Minimize()
+        minimized = true
         local targetPos = UDim2.new(1, -40, 0, 40)
         local targetSize = UDim2.fromScale(0.05, 0.05)
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
@@ -809,9 +799,13 @@ function antoralib:MakeWindow(Configs)
         MinimizedFrame:TweenSize(UDim2.fromOffset(60,60), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.3, true)
     end
 
+    -- Restore click on minimized icon
+    MinimizedFrame.MouseButton1Click:Connect(Restore)
+
+    -- Close button minimizes
     CloseButton.MouseButton1Click:Connect(Minimize)
 
-    -- SIDE PANEL: Tab button scrolling frame
+    -- Tab scrolling frame (side)
     local TabScroll = Create("ScrollingFrame", SidePanel.Frame, {
         Name = "TabScroll",
         Size = UDim2.new(1, 0, 1, 0),
@@ -835,7 +829,7 @@ function antoralib:MakeWindow(Configs)
         VerticalAlignment = Enum.VerticalAlignment.Top
     })
 
-    -- MAIN PANEL: Content container (full width)
+    -- Content container (main)
     local ContentContainer = Create("Frame", MainPanel.Frame, {
         Name = "ContentContainer",
         Size = UDim2.new(1, 0, 1, 0),
@@ -845,10 +839,18 @@ function antoralib:MakeWindow(Configs)
 
     -- Window object
     local Window, FirstTab = {}, false
-    local ContainerList = {}  -- list of tab content containers
+    local ContainerList = {}
 
     function Window:Minimize()
         Minimize()
+    end
+
+    function Window:MinimizeBtn()
+        if minimized then
+            Restore()
+        else
+            Minimize()
+        end
     end
 
     function Window:CloseBtn()
@@ -872,12 +874,8 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- Dialog function (copied from original Antora)
     function Window:Dialog(Configs)
         if MainPanel.Frame:FindFirstChild("Dialog") then return end
-        if not MainPanel.Frame.Visible then
-            -- If minimized, restore first (optional)
-        end
 
         local DTitle = Configs[1] or Configs.Title or "Dialog"
         local DText = Configs[2] or Configs.Text or "This is a Dialog"
@@ -994,7 +992,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- MakeTab: add a tab button to Side panel, and a content container in Main panel
     function Window:MakeTab(paste, Configs)
         if type(paste) == "table" then Configs = paste end
         local TName = Configs[1] or Configs.Title or "Tab!"
@@ -1005,7 +1002,6 @@ function antoralib:MakeWindow(Configs)
             TIcon = false
         end
 
-        -- Tab button
         local TabButton = Make("Button", TabScroll, {
             Size = UDim2.new(0.9, 0, 0, 32),
             Name = "TabButton"
@@ -1038,7 +1034,6 @@ function antoralib:MakeWindow(Configs)
             TextTruncate = "AtEnd"
         })
 
-        -- Selection indicator
         local Selected = Create("Frame", TabButton, {
             Size = UDim2.new(0, 4, 0, 4),
             Position = UDim2.new(0, 1, 0.5),
@@ -1052,7 +1047,6 @@ function antoralib:MakeWindow(Configs)
         selGradient.Parent = Selected
         Make("Corner", Selected, UDim.new(0.5, 0))
 
-        -- Content container (inside Main panel)
         local Container = Create("ScrollingFrame", ContentContainer, {
             Size = UDim2.new(1, 0, 1, 0),
             Position = UDim2.new(0, 0, 1),
@@ -1080,7 +1074,6 @@ function antoralib:MakeWindow(Configs)
 
         table.insert(ContainerList, Container)
 
-        -- Activate function
         local function Activate()
             if Container.Visible then return end
             for _, cont in pairs(ContainerList) do
@@ -1096,7 +1089,6 @@ function antoralib:MakeWindow(Configs)
             CreateTween({Selected, "BackgroundTransparency", 0, 0.35})
         end
 
-        -- Tab object
         local Tab = {}
         table.insert(antoralib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
         Tab.Cont = Container
@@ -1128,7 +1120,7 @@ function antoralib:MakeWindow(Configs)
             Activate()
         end
 
-        -- ========== Tab Methods (identical to original Antora) ==========
+        -- ========== Tab Methods ==========
         function Tab:AddSection(Configs)
             local SectionName = type(Configs) == "string" and Configs or Configs[1] or Configs.Name or Configs.Title or Configs.Section
 
@@ -1437,7 +1429,6 @@ function antoralib:MakeWindow(Configs)
                 CreateTween({DropFrame, "Position", NewPos, 0.1})
             end
 
-            -- Options management (same as original)
             local AddNewOptions, GetOptions, AddOption, RemoveOption, Selected do
                 local Default = type(OpDefault) ~= "table" and {OpDefault} or OpDefault
                 local MultiSelect = DMultiSelect
