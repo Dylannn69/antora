@@ -298,7 +298,7 @@ local function CreateTween(Configs)
     return Tween
 end
 
--- Drag is removed entirely
+-- Drag removed entirely
 
 local function VerifyTheme(Theme)
     for name,_ in pairs(antoralib.Themes) do
@@ -388,12 +388,14 @@ AddEle("Gradient", function(parent, props, ...)
     return New
 end)
 
--- ============================================================
---  ButtonFrame – used for all options (with BuilderSansExtraBold)
--- ============================================================
+-- ========== Fonts ==========
+local FONT_TAB = Enum.Font.LuckiestGuy          -- tabs and header
+local FONT_CONTENT = Enum.Font.BuilderSansExtraBold  -- everything inside main panel
+
+-- ButtonFrame with updated fonts
 local function ButtonFrame(Instance, Title, Description, HolderSize)
     local TitleL = InsertTheme(Create("TextLabel", {
-        Font = Enum.Font.BuilderSansExtraBold,
+        Font = FONT_CONTENT,
         TextColor3 = Theme["Color Text"],
         Size = UDim2.new(1, -20),
         AutomaticSize = "Y",
@@ -408,7 +410,7 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
     }), "Text")
 
     local DescL = InsertTheme(Create("TextLabel", {
-        Font = Enum.Font.BuilderSansExtraBold,
+        Font = FONT_CONTENT,
         TextColor3 = Theme["Color Dark Text"],
         Size = UDim2.new(1, -20),
         AutomaticSize = "Y",
@@ -543,7 +545,6 @@ function antoralib:SetScale(NewScale)
     UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
--- ===== PUBLIC SetFlag / GetFlag =====
 function antoralib:SetFlag(Flag, Value)
     SetFlag(Flag, Value)
 end
@@ -553,10 +554,7 @@ function antoralib:GetFlag(Flag)
 end
 
 -- ============================
---  MakeWindow – with fonts:
---    Header & Tabs: LuckiestGuy
---    Everything inside main panel: BuilderSansExtraBold
---    Marble + gradient on all components
+--  MakeWindow with your UI template (NO DRAG, STARTUP LOCK)
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -683,14 +681,13 @@ function antoralib:MakeWindow(Configs)
     })
     Make("Corner", HeaderMarble, UDim.new(0, 18))
 
-    -- Header title – LuckiestGuy
     local Title = Create("TextLabel", Header, {
         Name = "Title",
         AnchorPoint = Vector2.new(0.5,0.5),
         Position = UDim2.fromScale(0.5,0.5),
         Size = UDim2.fromScale(0.9,0.8),
         BackgroundTransparency = 1,
-        Font = Enum.Font.LuckiestGuy,
+        Font = FONT_TAB,  -- LuckiestGuy
         Text = WTitle,
         TextScaled = true,
         TextColor3 = Color3.fromRGB(255,255,255)
@@ -855,7 +852,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- Dialog with BuilderSansExtraBold fonts
     function Window:Dialog(Configs)
         if MainPanel.Frame:FindFirstChild("Dialog") then return end
 
@@ -870,7 +866,7 @@ function antoralib:MakeWindow(Configs)
             AnchorPoint = Vector2.new(0.5, 0.5)
         }, {
             Create("TextLabel", {
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 Size = UDim2.new(1, 0, 0, 20),
                 Text = DTitle,
                 TextXAlignment = "Left",
@@ -880,7 +876,7 @@ function antoralib:MakeWindow(Configs)
                 BackgroundTransparency = 1
             }),
             Create("TextLabel", {
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 Size = UDim2.new(1, -25),
                 AutomaticSize = "Y",
                 Text = DText,
@@ -937,7 +933,7 @@ function antoralib:MakeWindow(Configs)
             AddMarbleOverlay(Button, UDim.new(0, 6))
             SetProps(Button, {
                 Text = Name,
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextColor3 = Theme["Color Text"],
                 TextSize = 12
             })
@@ -974,7 +970,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- MakeTab – uses LuckiestGuy for tab labels
     function Window:MakeTab(paste, Configs)
         if type(paste) == "table" then Configs = paste end
         local TName = Configs[1] or Configs.Title or "Tab!"
@@ -1004,13 +999,12 @@ function antoralib:MakeWindow(Configs)
             })
         end
 
-        -- Tab label: LuckiestGuy
         local LabelTitle = Create("TextLabel", TabButton, {
             Size = UDim2.new(1, -30, 1, 0),
             Position = UDim2.new(0, TIcon and 32 or 10, 0.5),
             AnchorPoint = Vector2.new(0, 0.5),
             BackgroundTransparency = 1,
-            Font = Enum.Font.LuckiestGuy,
+            Font = FONT_TAB,  -- LuckiestGuy
             Text = TName,
             TextColor3 = Theme["Color Text"],
             TextSize = 12,
@@ -1104,7 +1098,7 @@ function antoralib:MakeWindow(Configs)
             Activate()
         end
 
-        -- ========== Tab Methods (all use BuilderSansExtraBold) ==========
+        -- ========== Tab Methods ==========
         function Tab:AddSection(Configs)
             local SectionName = type(Configs) == "string" and Configs or Configs[1] or Configs.Name or Configs.Title or Configs.Section
 
@@ -1115,7 +1109,7 @@ function antoralib:MakeWindow(Configs)
             })
 
             local SectionLabel = InsertTheme(Create("TextLabel", SectionFrame, {
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 Text = SectionName,
                 TextColor3 = Theme["Color Text"],
                 Size = UDim2.new(1, -25, 1, 0),
@@ -1298,7 +1292,7 @@ function antoralib:MakeWindow(Configs)
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new(0.5, 0, 0.5, 0),
                 BackgroundTransparency = 1,
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextScaled = true,
                 TextColor3 = Theme["Color Text"],
                 Text = "..."
@@ -1519,13 +1513,12 @@ function antoralib:MakeWindow(Configs)
                     grad.Parent = IsSelected
                     Make("Corner", IsSelected, UDim.new(0.5, 0))
 
-                    -- Option label: BuilderSansExtraBold
                     local OptioneName = InsertTheme(Create("TextLabel", Button, {
                         Size = UDim2.new(1, 0, 1),
                         Position = UDim2.new(0, 10),
                         Text = Name,
                         TextColor3 = Theme["Color Text"],
-                        Font = Enum.Font.BuilderSansExtraBold,
+                        Font = FONT_CONTENT,
                         TextXAlignment = "Left",
                         BackgroundTransparency = 1,
                         TextTransparency = 0.4
@@ -1668,7 +1661,7 @@ function antoralib:MakeWindow(Configs)
                 Position = UDim2.new(0, 0, 0.5),
                 BackgroundTransparency = 1,
                 TextColor3 = Theme["Color Text"],
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextSize = 12
             }), "Text")
 
@@ -1768,7 +1761,7 @@ function antoralib:MakeWindow(Configs)
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new(0.5, 0, 0.5, 0),
                 BackgroundTransparency = 1,
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextScaled = true,
                 TextColor3 = Theme["Color Text"],
                 ClearTextOnFocus = TClearText,
@@ -1826,7 +1819,7 @@ function antoralib:MakeWindow(Configs)
                 Size = UDim2.new(1, 0, 0, 15),
                 Position = UDim2.new(0, 5),
                 TextColor3 = Color3.fromRGB(176, 96, 244),
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
                 TextSize = 10,
@@ -1855,7 +1848,7 @@ function antoralib:MakeWindow(Configs)
             local LTitle = InsertTheme(Create("TextLabel", FrameHolder, {
                 Size = UDim2.new(1, -52, 0, 15),
                 Position = UDim2.new(0, 44, 0, 7),
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextColor3 = Theme["Color Text"],
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
@@ -1868,7 +1861,7 @@ function antoralib:MakeWindow(Configs)
                 Position = UDim2.new(0, 44, 0, 22),
                 TextWrapped = "Y",
                 AutomaticSize = "Y",
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextColor3 = Theme["Color Dark Text"],
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
@@ -1881,7 +1874,7 @@ function antoralib:MakeWindow(Configs)
                 AnchorPoint = Vector2.new(0.5, 1),
                 Position = UDim2.new(0.5, 0, 1, -7),
                 Text = "Join",
-                Font = Enum.Font.BuilderSansExtraBold,
+                Font = FONT_CONTENT,
                 TextSize = 12,
                 TextColor3 = Color3.fromRGB(220, 220, 220),
                 BackgroundColor3 = Color3.fromRGB(176, 96, 244)
