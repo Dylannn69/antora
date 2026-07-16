@@ -298,7 +298,7 @@ local function CreateTween(Configs)
     return Tween
 end
 
--- No drag function – it's been removed entirely.
+-- Drag is removed entirely
 
 local function VerifyTheme(Theme)
     for name,_ in pairs(antoralib.Themes) do
@@ -540,6 +540,15 @@ function antoralib:SetScale(NewScale)
     UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
+-- ===== PUBLIC SetFlag / GetFlag =====
+function antoralib:SetFlag(Flag, Value)
+    SetFlag(Flag, Value)
+end
+
+function antoralib:GetFlag(Flag)
+    return GetFlag(Flag)
+end
+
 -- ============================
 --  MakeWindow with your UI template (NO DRAG, STARTUP LOCK)
 -- ============================
@@ -589,7 +598,6 @@ function antoralib:MakeWindow(Configs)
             BackgroundColor3 = Color3.fromRGB(255,255,255),
             BackgroundTransparency = 0.15,
             BorderSizePixel = 0
-            -- IMPORTANT: No Active = true, no drag‑related properties
         })
         Make("Corner", panel.Frame, UDim.new(0, cornerRadius))
 
@@ -632,7 +640,7 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- NO DRAG – no MakeDrag calls, no extra input connections.
+    -- No drag
 
     -- Header
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
@@ -725,7 +733,7 @@ function antoralib:MakeWindow(Configs)
 
     -- State
     local minimized = false
-    local creationTime = tick()  -- for startup lock
+    local creationTime = tick()
 
     -- Restore function
     local function Restore()
@@ -745,7 +753,6 @@ function antoralib:MakeWindow(Configs)
 
     -- Minimize function with startup lock
     local function Minimize()
-        -- Ignore clicks during the first 0.5 seconds to avoid accidental minimisation on launch
         if tick() - creationTime < 0.5 then return end
 
         minimized = true
@@ -769,10 +776,7 @@ function antoralib:MakeWindow(Configs)
         MinimizedFrame:TweenSize(UDim2.fromOffset(60,60), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.3, true)
     end
 
-    -- Restore click on minimized icon
     MinimizedFrame.MouseButton1Click:Connect(Restore)
-
-    -- Close button minimizes (with startup protection)
     CloseButton.MouseButton1Click:Connect(Minimize)
 
     -- Tab scrolling frame (side)
