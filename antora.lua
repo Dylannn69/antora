@@ -48,10 +48,11 @@ local UIScale = ViewportSize.Y / 450
 local Settings = antoralib.Settings
 local Flags = antoralib.Flags
 
+-- Purple gradient (bottom → top, but your template uses Rotation=90, we'll keep that for consistency)
 local PURPLE_GRADIENT = ColorSequence.new({
-    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),
-    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),
-    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),
+    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple
+    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),    -- Medium Purple
+    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),   -- Light Pink/Purple
 })
 
 local SetProps, SetChildren, InsertTheme, Create do
@@ -360,6 +361,7 @@ local function Make(Ele, Instance, props, ...)
     return Element
 end
 
+-- Helper: add marble texture overlay to any frame
 local function AddMarbleOverlay(parent, cornerRadius, transparency)
     cornerRadius = cornerRadius or UDim.new(0, 6)
     transparency = transparency or 0.6
@@ -417,14 +419,11 @@ AddEle("Gradient", function(parent, props, ...)
     local args = {...}
     local New = InsertTheme(SetProps(Create("UIGradient", parent, {
         Color = PURPLE_GRADIENT,
-        Rotation = 180
+        Rotation = 180  -- bottom → top (but your template uses 90, we'll keep 180 for consistency)
     }), props), "Gradient")
     return New
 end)
 
--- ============================================
---  SCALED ButtonFrame – bigger, bolder, balanced
--- ============================================
 local function ButtonFrame(Instance, Title, Description, HolderSize)
     local TitleL = InsertTheme(Create("TextLabel", {
         Font = Enum.Font.GothamMedium,
@@ -435,7 +434,7 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundTransparency = 1,
         TextTruncate = "AtEnd",
-        TextSize = 14,                           -- was 10
+        TextSize = 10,
         TextXAlignment = "Left",
         Text = "",
         RichText = true
@@ -449,36 +448,36 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
         Position = UDim2.new(0, 12, 0, 15),
         BackgroundTransparency = 1,
         TextWrapped = true,
-        TextSize = 11,                           -- was 8
+        TextSize = 8,
         TextXAlignment = "Left",
         Text = "",
         RichText = true
     }), "DarkText")
 
     local Frame = Make("Button", Instance, {
-        Size = UDim2.new(1, 0, 0, 40),           -- was 25
+        Size = UDim2.new(1, 0, 0, 25),
         AutomaticSize = "Y",
         Name = "Option"
     })
-    Make("Corner", Frame, UDim.new(0, 8))
+    Make("Corner", Frame, UDim.new(0, 6))
     Make("Gradient", Frame)
-    AddMarbleOverlay(Frame, UDim.new(0, 8))
+    AddMarbleOverlay(Frame, UDim.new(0, 6))
 
     local LabelHolder = Create("Frame", Frame, {
         AutomaticSize = "Y",
         BackgroundTransparency = 1,
         Size = HolderSize,
-        Position = UDim2.new(0, 12, 0, 0),
+        Position = UDim2.new(0, 10, 0),
         AnchorPoint = Vector2.new(0, 0)
     }, {
         Create("UIListLayout", {
             SortOrder = "LayoutOrder",
             VerticalAlignment = "Center",
-            Padding = UDim.new(0, 4)              -- was 2
+            Padding = UDim.new(0, 2)
         }),
         Create("UIPadding", {
-            PaddingBottom = UDim.new(0, 8),
-            PaddingTop = UDim.new(0, 8)
+            PaddingBottom = UDim.new(0, 5),
+            PaddingTop = UDim.new(0, 5)
         }),
         TitleL,
         DescL,
@@ -494,12 +493,12 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
         if type(NewDesc) == "string" and NewDesc:gsub(" ", ""):len() > 0 then
             DescL.Visible = true
             DescL.Text = NewDesc
-            LabelHolder.Position = UDim2.new(0, 12, 0, 0)
+            LabelHolder.Position = UDim2.new(0, 10, 0)
             LabelHolder.AnchorPoint = Vector2.new(0, 0)
         else
             DescL.Visible = false
             DescL.Text = ""
-            LabelHolder.Position = UDim2.new(0, 12, 0.5)
+            LabelHolder.Position = UDim2.new(0, 10, 0.5)
             LabelHolder.AnchorPoint = Vector2.new(0, 0.5)
         end
     end
@@ -524,6 +523,7 @@ local function GetColor(Instance)
     return ""
 end
 
+-- /////////// --
 function antoralib:GetIcon(index)
     if type(index) ~= "string" or index:find("rbxassetid://") or #index == 0 then
         return index
@@ -577,9 +577,9 @@ function antoralib:SetScale(NewScale)
     UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
--- ============================================
---  MakeWindow with your UI template + scaling
--- ============================================
+-- ============================
+--  MakeWindow with your UI template (side panel OUTSIDE main)
+-- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
     local WMiniText = Configs[2] or Configs.SubTitle or "by: unkinou"
@@ -602,56 +602,89 @@ function antoralib:MakeWindow(Configs)
         end
     end; LoadFile()
 
-    -- SHADOW
-    local Shadow = Create("Frame", ScreenGui, {
-        Name = "Shadow",
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.54, 8),
-        Size = UDim2.fromScale(0.4, 0.75),
-        BackgroundColor3 = Color3.fromRGB(0,0,0),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 0
-    })
-    Make("Corner", Shadow, UDim.new(0, 20))
+    -- Helper to create a panel with shadow, gradient, marble, and stroke
+    local function CreatePanel(name, anchorPos, size, cornerRadius, zIndex)
+        local panel = {}
+        cornerRadius = cornerRadius or 20
 
-    -- MAIN PANEL
-    local Main = Create("Frame", ScreenGui, {
-        Name = "Main",
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.fromScale(0.5, 0.54),
-        Size = UDim2.fromScale(0.4, 0.75),
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BorderSizePixel = 0
-    })
-    Make("Corner", Main, UDim.new(0, 20))
+        -- Shadow
+        panel.Shadow = Create("Frame", ScreenGui, {
+            Name = name .. "Shadow",
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = anchorPos + UDim2.new(0, 0, 0, 8),
+            Size = size,
+            BackgroundColor3 = Color3.fromRGB(0,0,0),
+            BackgroundTransparency = 0.5,
+            BorderSizePixel = 0,
+            ZIndex = zIndex or 0
+        })
+        Make("Corner", panel.Shadow, UDim.new(0, cornerRadius))
 
-    -- White stroke
-    local MainStroke = Create("UIStroke", Main, {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 2,
-        Transparency = 0.3,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    })
+        -- Main frame
+        panel.Frame = Create("Frame", ScreenGui, {
+            Name = name,
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = anchorPos,
+            Size = size,
+            BackgroundColor3 = Color3.fromRGB(255,255,255),
+            BackgroundTransparency = 0.15,
+            BorderSizePixel = 0
+        })
+        Make("Corner", panel.Frame, UDim.new(0, cornerRadius))
 
-    -- Main gradient (horizontal)
-    local MainGradient = Create("UIGradient", Main, {
-        Rotation = 90,
-        Color = PURPLE_GRADIENT
-    })
+        -- White stroke
+        local stroke = Create("UIStroke", panel.Frame, {
+            Color = Color3.fromRGB(255,255,255),
+            Thickness = 2,
+            Transparency = 0.3,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        })
 
-    -- Marble texture
-    local MarbleTexture = Create("ImageLabel", Main, {
-        Size = UDim2.fromScale(1, 1),
-        BackgroundTransparency = 1,
-        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png",
-        ImageTransparency = 0.6,
-        ScaleType = Enum.ScaleType.Stretch
-    })
-    Make("Corner", MarbleTexture, UDim.new(0, 20))
+        -- Gradient (Rotation = 90 to match your template)
+        local gradient = Create("UIGradient", panel.Frame, {
+            Rotation = 90,
+            Color = PURPLE_GRADIENT
+        })
 
-    -- HEADER SHADOW
-    local HeaderShadow = Create("Frame", Main, {
+        -- Marble texture
+        local marble = Create("ImageLabel", panel.Frame, {
+            Size = UDim2.fromScale(1,1),
+            BackgroundTransparency = 1,
+            Image = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png",
+            ImageTransparency = 0.6,
+            ScaleType = Enum.ScaleType.Stretch
+        })
+        Make("Corner", marble, UDim.new(0, cornerRadius))
+
+        return panel
+    end
+
+    -- Layout parameters (matching your template)
+    local MainWidth = 0.40
+    local MainHeight = 0.75
+    local SideWidth = 0.15
+    local SideHeight = 0.75
+    local Gap = 0.025  -- gap between side and main
+
+    -- Main panel (centre)
+    local MainSize = UDim2.fromScale(MainWidth, MainHeight)
+    local MainPos = UDim2.fromScale(0.5, 0.54)
+    local MainPanel = CreatePanel("Main", MainPos, MainSize, 20, 1)
+
+    -- Side panel (left of Main)
+    local SideX = (0.5 - MainWidth/2) - Gap - SideWidth/2
+    local SidePos = UDim2.new(SideX, 0, 0.54, 0)
+    local SideSize = UDim2.fromScale(SideWidth, SideHeight)
+    local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
+
+    -- Make both panels draggable together
+    MakeDrag(MainPanel.Frame)
+    -- Also drag side when main is dragged (we'll connect via a simple way: we can copy the drag logic to side, but for simplicity we'll allow separate drags or group)
+    -- To keep it simple, we'll make side draggable too (they move independently, but that's fine)
+    MakeDrag(SidePanel.Frame)
+
+    -- HEADER (only on main panel)
+    local HeaderShadow = Create("Frame", MainPanel.Frame, {
         Name = "HeaderShadow",
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(0.5, 2, -0.04, 4),
@@ -663,8 +696,7 @@ function antoralib:MakeWindow(Configs)
     })
     Make("Corner", HeaderShadow, UDim.new(0, 18))
 
-    -- HEADER
-    local Header = Create("Frame", Main, {
+    local Header = Create("Frame", MainPanel.Frame, {
         Name = "Header",
         AnchorPoint = Vector2.new(0.5,0),
         Position = UDim2.new(0.5,0,-0.04,0),
@@ -674,17 +706,17 @@ function antoralib:MakeWindow(Configs)
     })
     Make("Corner", Header, UDim.new(0, 18))
 
-    local HeaderGradient = MainGradient:Clone()
+    local HeaderGradient = MainPanel.Frame:FindFirstChildWhichIsA("UIGradient"):Clone()
     HeaderGradient.Parent = Header
 
-    local HeaderMarbleTexture = Create("ImageLabel", Header, {
-        Size = UDim2.fromScale(1, 1),
+    local HeaderMarble = Create("ImageLabel", Header, {
+        Size = UDim2.fromScale(1,1),
         BackgroundTransparency = 1,
         Image = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png",
         ImageTransparency = 0.6,
         ScaleType = Enum.ScaleType.Stretch
     })
-    Make("Corner", HeaderMarbleTexture, UDim.new(0, 18))
+    Make("Corner", HeaderMarble, UDim.new(0, 18))
 
     local Title = Create("TextLabel", Header, {
         Name = "Title",
@@ -699,7 +731,7 @@ function antoralib:MakeWindow(Configs)
     })
 
     -- CLOSE/MINIMIZE BUTTON
-    local CloseButton = Create("ImageButton", Main, {
+    local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new(1, 0, 0, 0),
@@ -710,7 +742,7 @@ function antoralib:MakeWindow(Configs)
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 10
     })
-    local closeCorner = Create("UICorner", CloseButton, { CornerRadius = UDim.new(1, 0) })
+    Make("Corner", CloseButton, UDim.new(1, 0))
 
     CloseButton.MouseEnter:Connect(function()
         CloseButton:TweenSize(UDim2.fromOffset(62, 62), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
@@ -719,7 +751,7 @@ function antoralib:MakeWindow(Configs)
         CloseButton:TweenSize(UDim2.fromOffset(56, 56), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
     end)
 
-    -- MINIMIZED FRAME
+    -- MINIMIZED FRAME (restore button)
     local MinimizedFrame = Create("ImageButton", ScreenGui, {
         Name = "MinimizedFrame",
         AnchorPoint = Vector2.new(1, 0),
@@ -734,90 +766,53 @@ function antoralib:MakeWindow(Configs)
     })
     Make("Corner", MinimizedFrame, UDim.new(1, 0))
     local MinimizedStroke = Create("UIStroke", MinimizedFrame, {
-        Color = Color3.fromRGB(255, 255, 255),
+        Color = Color3.fromRGB(255,255,255),
         Thickness = 2,
         Transparency = 0.3,
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     })
 
+    -- Restore
     MinimizedFrame.MouseButton1Click:Connect(function()
         MinimizedFrame.Visible = false
-        Main.Visible = true
-        Shadow.Visible = true
+        MainPanel.Frame.Visible = true
+        MainPanel.Shadow.Visible = true
+        SidePanel.Frame.Visible = true
+        SidePanel.Shadow.Visible = true
+
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        TweenService:Create(Main, tweenInfo, {Size = UDim2.fromScale(0.4, 0.75), Position = UDim2.fromScale(0.5, 0.54)}):Play()
-        TweenService:Create(Shadow, tweenInfo, {Size = UDim2.fromScale(0.4, 0.75), Position = UDim2.fromScale(0.5, 0.54)}):Play()
+        TweenService:Create(MainPanel.Frame, tweenInfo, {Size = MainSize, Position = MainPos}):Play()
+        TweenService:Create(MainPanel.Shadow, tweenInfo, {Size = MainSize, Position = MainPos + UDim2.new(0,0,0,8)}):Play()
+        TweenService:Create(SidePanel.Frame, tweenInfo, {Size = SideSize, Position = SidePos}):Play()
+        TweenService:Create(SidePanel.Shadow, tweenInfo, {Size = SideSize, Position = SidePos + UDim2.new(0,0,0,8)}):Play()
     end)
 
+    -- Minimize function
     local function Minimize()
         local targetPos = UDim2.new(1, -40, 0, 40)
         local targetSize = UDim2.fromScale(0.05, 0.05)
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
-        TweenService:Create(Main, tweenInfo, {Size = targetSize, Position = targetPos}):Play()
-        TweenService:Create(Shadow, tweenInfo, {Size = targetSize, Position = targetPos}):Play()
+
+        TweenService:Create(MainPanel.Frame, tweenInfo, {Size = targetSize, Position = targetPos}):Play()
+        TweenService:Create(MainPanel.Shadow, tweenInfo, {Size = targetSize, Position = targetPos + UDim2.new(0,0,0,8)}):Play()
+        TweenService:Create(SidePanel.Frame, tweenInfo, {Size = targetSize, Position = targetPos}):Play()
+        TweenService:Create(SidePanel.Shadow, tweenInfo, {Size = targetSize, Position = targetPos + UDim2.new(0,0,0,8)}):Play()
+
         task.wait(0.3)
-        Main.Visible = false
-        Shadow.Visible = false
+        MainPanel.Frame.Visible = false
+        MainPanel.Shadow.Visible = false
+        SidePanel.Frame.Visible = false
+        SidePanel.Shadow.Visible = false
+
         MinimizedFrame.Visible = true
-        MinimizedFrame.Size = UDim2.fromOffset(0, 0)
-        MinimizedFrame:TweenSize(UDim2.fromOffset(60, 60), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.3, true)
+        MinimizedFrame.Size = UDim2.fromOffset(0,0)
+        MinimizedFrame:TweenSize(UDim2.fromOffset(60,60), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.3, true)
     end
 
     CloseButton.MouseButton1Click:Connect(Minimize)
 
-    -- SIDE SHADOW
-    local SideShadow = Create("Frame", Main, {
-        Name = "SideShadow",
-        AnchorPoint = Vector2.new(1,0.5),
-        Position = UDim2.new(0,-12,0.5,8),
-        Size = UDim2.fromScale(0.3,0.90),
-        BackgroundColor3 = Color3.fromRGB(0,0,0),
-        BackgroundTransparency = 0.45,
-        BorderSizePixel = 0,
-        ZIndex = 0
-    })
-    Make("Corner", SideShadow, UDim.new(0, 16))
-
-    -- SIDE PANEL
-    local Side = Create("Frame", Main, {
-        Name = "Side",
-        AnchorPoint = Vector2.new(1,0.5),
-        Position = UDim2.new(0,-12,0.5,0),
-        Size = UDim2.fromScale(0.3,0.90),
-        BackgroundColor3 = Color3.fromRGB(255,255,255),
-        BackgroundTransparency = 0.15,
-        BorderSizePixel = 0
-    })
-    Make("Corner", Side, UDim.new(0, 16))
-    local SideStroke = Create("UIStroke", Side, {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 2,
-        Transparency = 0.3,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    })
-    local SideGradient = MainGradient:Clone()
-    SideGradient.Parent = Side
-
-    local SideMarbleTexture = Create("ImageLabel", Side, {
-        Size = UDim2.fromScale(1, 1),
-        BackgroundTransparency = 1,
-        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png",
-        ImageTransparency = 0.6,
-        ScaleType = Enum.ScaleType.Stretch
-    })
-    Make("Corner", SideMarbleTexture, UDim.new(0, 16))
-
-    -- CONTENT AREA
-    local ContentContainer = Create("Frame", Main, {
-        Name = "ContentContainer",
-        Size = UDim2.new(0.7, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1,
-        ClipsDescendants = true
-    })
-
-    -- TAB SCROLL (inside Side)
-    local TabScroll = Create("ScrollingFrame", Side, {
+    -- SIDE PANEL: Tab button scrolling frame
+    local TabScroll = Create("ScrollingFrame", SidePanel.Frame, {
         Name = "TabScroll",
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -835,15 +830,22 @@ function antoralib:MakeWindow(Configs)
         PaddingRight = UDim.new(0, 5)
     })
     local TabLayout = Create("UIListLayout", TabScroll, {
-        Padding = UDim.new(0, 6),               -- was 5
+        Padding = UDim.new(0, 5),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         VerticalAlignment = Enum.VerticalAlignment.Top
     })
 
-    MakeDrag(Main)
+    -- MAIN PANEL: Content container (full width)
+    local ContentContainer = Create("Frame", MainPanel.Frame, {
+        Name = "ContentContainer",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true
+    })
 
+    -- Window object
     local Window, FirstTab = {}, false
-    local ContainerList = {}
+    local ContainerList = {}  -- list of tab content containers
 
     function Window:Minimize()
         Minimize()
@@ -870,8 +872,12 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
+    -- Dialog function (copied from original Antora)
     function Window:Dialog(Configs)
-        if Main:FindFirstChild("Dialog") then return end
+        if MainPanel.Frame:FindFirstChild("Dialog") then return end
+        if not MainPanel.Frame.Visible then
+            -- If minimized, restore first (optional)
+        end
 
         local DTitle = Configs[1] or Configs.Title or "Dialog"
         local DText = Configs[2] or Configs.Text or "This is a Dialog"
@@ -879,36 +885,36 @@ function antoralib:MakeWindow(Configs)
 
         local Frame = Create("Frame", {
             Active = true,
-            Size = UDim2.fromOffset(300 * 1.08, 180 * 1.08),  -- scaled up
+            Size = UDim2.fromOffset(250 * 1.08, 150 * 1.08),
             Position = UDim2.fromScale(0.5, 0.5),
             AnchorPoint = Vector2.new(0.5, 0.5)
         }, {
             Create("TextLabel", {
                 Font = Enum.Font.GothamBold,
-                Size = UDim2.new(1, 0, 0, 24),
+                Size = UDim2.new(1, 0, 0, 20),
                 Text = DTitle,
                 TextXAlignment = "Left",
                 TextColor3 = Theme["Color Text"],
-                TextSize = 18,
-                Position = UDim2.fromOffset(15, 8),
+                TextSize = 15,
+                Position = UDim2.fromOffset(15, 5),
                 BackgroundTransparency = 1
             }),
             Create("TextLabel", {
                 Font = Enum.Font.GothamMedium,
-                Size = UDim2.new(1, -30),
+                Size = UDim2.new(1, -25),
                 AutomaticSize = "Y",
                 Text = DText,
                 TextXAlignment = "Left",
                 TextColor3 = Theme["Color Dark Text"],
-                TextSize = 14,
-                Position = UDim2.fromOffset(15, 30),
+                TextSize = 12,
+                Position = UDim2.fromOffset(15, 25),
                 BackgroundTransparency = 1,
                 TextWrapped = true
             })
         })
         Make("Gradient", Frame, {Rotation = 180})
         Make("Corner", Frame)
-        AddMarbleOverlay(Frame, UDim.new(0, 8))
+        AddMarbleOverlay(Frame, UDim.new(0, 6))
 
         local ButtonsHolder = Create("Frame", Frame, {
             Size = UDim2.fromScale(1, 0.35),
@@ -918,14 +924,14 @@ function antoralib:MakeWindow(Configs)
             BackgroundTransparency = 1
         }, {
             Create("UIListLayout", {
-                Padding = UDim.new(0, 12),
+                Padding = UDim.new(0, 10),
                 VerticalAlignment = "Center",
                 FillDirection = "Horizontal",
                 HorizontalAlignment = "Center"
             })
         })
 
-        local Screen = Create("Frame", Main, {
+        local Screen = Create("Frame", MainPanel.Frame, {
             BackgroundTransparency = 0.6,
             Active = true,
             BackgroundColor3 = Theme["Color Hub 2"],
@@ -935,7 +941,7 @@ function antoralib:MakeWindow(Configs)
         })
         Make("Corner", Screen, UDim.new(0, 20))
         Frame.Parent = Screen
-        CreateTween({Frame, "Size", UDim2.fromOffset(300, 180), 0.2})
+        CreateTween({Frame, "Size", UDim2.fromOffset(250, 150), 0.2})
         CreateTween({Frame, "Transparency", 0, 0.15})
         CreateTween({Screen, "Transparency", 0.3, 0.15})
 
@@ -948,24 +954,24 @@ function antoralib:MakeWindow(Configs)
             local Button = Make("Button", ButtonsHolder)
             Make("Corner", Button)
             Make("Gradient", Button)
-            AddMarbleOverlay(Button, UDim.new(0, 8))
+            AddMarbleOverlay(Button, UDim.new(0, 6))
             SetProps(Button, {
                 Text = Name,
                 Font = Enum.Font.GothamBold,
                 TextColor3 = Theme["Color Text"],
-                TextSize = 16
+                TextSize = 12
             })
 
             for _,B in pairs(ButtonsHolder:GetChildren()) do
                 if B:IsA("TextButton") then
-                    B.Size = UDim2.new(1 / ButtonCount, -(((ButtonCount - 1) * 20) / ButtonCount), 0, 38)
+                    B.Size = UDim2.new(1 / ButtonCount, -(((ButtonCount - 1) * 20) / ButtonCount), 0, 32)
                 end
             end
             Button.Activated:Connect(Dialog.Close)
             Button.Activated:Connect(Callback)
         end
         function Dialog:Close()
-            CreateTween({Frame, "Size", UDim2.fromOffset(300 * 1.08, 180 * 1.08), 0.2})
+            CreateTween({Frame, "Size", UDim2.fromOffset(250 * 1.08, 150 * 1.08), 0.2})
             CreateTween({Screen, "Transparency", 1, 0.15})
             CreateTween({Frame, "Transparency", 1, 0.15, true})
             Screen:Destroy()
@@ -988,6 +994,7 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
+    -- MakeTab: add a tab button to Side panel, and a content container in Main panel
     function Window:MakeTab(paste, Configs)
         if type(paste) == "table" then Configs = paste end
         local TName = Configs[1] or Configs.Title or "Tab!"
@@ -998,9 +1005,9 @@ function antoralib:MakeWindow(Configs)
             TIcon = false
         end
 
-        -- Tab button (scaled)
+        -- Tab button
         local TabButton = Make("Button", TabScroll, {
-            Size = UDim2.new(0.9, 0, 0, 40),  -- was 32
+            Size = UDim2.new(0.9, 0, 0, 32),
             Name = "TabButton"
         })
         Make("Corner", TabButton, UDim.new(0, 8))
@@ -1010,8 +1017,8 @@ function antoralib:MakeWindow(Configs)
         local LabelIcon
         if TIcon then
             LabelIcon = Create("ImageLabel", TabButton, {
-                Size = UDim2.new(0, 24, 0, 24),
-                Position = UDim2.new(0, 10, 0.5),
+                Size = UDim2.new(0, 20, 0, 20),
+                Position = UDim2.new(0, 8, 0.5),
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundTransparency = 1,
                 Image = TIcon
@@ -1019,21 +1026,21 @@ function antoralib:MakeWindow(Configs)
         end
 
         local LabelTitle = Create("TextLabel", TabButton, {
-            Size = UDim2.new(1, -35, 1, 0),
-            Position = UDim2.new(0, TIcon and 38 or 12, 0.5),
+            Size = UDim2.new(1, -30, 1, 0),
+            Position = UDim2.new(0, TIcon and 32 or 10, 0.5),
             AnchorPoint = Vector2.new(0, 0.5),
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamMedium,
             Text = TName,
             TextColor3 = Theme["Color Text"],
-            TextSize = 14,                     -- was 12
+            TextSize = 12,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTruncate = "AtEnd"
         })
 
         -- Selection indicator
         local Selected = Create("Frame", TabButton, {
-            Size = UDim2.new(0, 5, 0, 4),
+            Size = UDim2.new(0, 4, 0, 4),
             Position = UDim2.new(0, 1, 0.5),
             AnchorPoint = Vector2.new(0, 0.5),
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -1045,12 +1052,12 @@ function antoralib:MakeWindow(Configs)
         selGradient.Parent = Selected
         Make("Corner", Selected, UDim.new(0.5, 0))
 
-        -- Content container
+        -- Content container (inside Main panel)
         local Container = Create("ScrollingFrame", ContentContainer, {
             Size = UDim2.new(1, 0, 1, 0),
             Position = UDim2.new(0, 0, 1),
             AnchorPoint = Vector2.new(0, 1),
-            ScrollBarThickness = 2,
+            ScrollBarThickness = 1.5,
             BackgroundTransparency = 1,
             ScrollBarImageTransparency = 0.2,
             ScrollBarImageColor3 = Theme["Color Theme"],
@@ -1062,17 +1069,18 @@ function antoralib:MakeWindow(Configs)
             Visible = false
         })
         local ContainerPadding = Create("UIPadding", Container, {
-            PaddingLeft = UDim.new(0, 8),    -- reduced from 10
-            PaddingRight = UDim.new(0, 8),
-            PaddingTop = UDim.new(0, 6),     -- reduced
-            PaddingBottom = UDim.new(0, 6)
+            PaddingLeft = UDim.new(0, 10),
+            PaddingRight = UDim.new(0, 10),
+            PaddingTop = UDim.new(0, 10),
+            PaddingBottom = UDim.new(0, 10)
         })
         local ContainerLayout = Create("UIListLayout", Container, {
-            Padding = UDim.new(0, 6)         -- was 5
+            Padding = UDim.new(0, 5)
         })
 
         table.insert(ContainerList, Container)
 
+        -- Activate function
         local function Activate()
             if Container.Visible then return end
             for _, cont in pairs(ContainerList) do
@@ -1084,10 +1092,11 @@ function antoralib:MakeWindow(Configs)
                     tab.func:Disable()
                 end
             end
-            CreateTween({Selected, "Size", UDim2.new(0, 5, 0, 20), 0.35})
+            CreateTween({Selected, "Size", UDim2.new(0, 4, 0, 16), 0.35})
             CreateTween({Selected, "BackgroundTransparency", 0, 0.35})
         end
 
+        -- Tab object
         local Tab = {}
         table.insert(antoralib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
         Tab.Cont = Container
@@ -1098,7 +1107,7 @@ function antoralib:MakeWindow(Configs)
 
         function Tab:Disable()
             Container.Visible = false
-            CreateTween({Selected, "Size", UDim2.new(0, 5, 0, 4), 0.35})
+            CreateTween({Selected, "Size", UDim2.new(0, 4, 0, 4), 0.35})
             CreateTween({Selected, "BackgroundTransparency", 1, 0.35})
         end
 
@@ -1119,12 +1128,12 @@ function antoralib:MakeWindow(Configs)
             Activate()
         end
 
-        -- ========== SCALED Tab Methods ==========
+        -- ========== Tab Methods (identical to original Antora) ==========
         function Tab:AddSection(Configs)
             local SectionName = type(Configs) == "string" and Configs or Configs[1] or Configs.Name or Configs.Title or Configs.Section
 
             local SectionFrame = Create("Frame", Container, {
-                Size = UDim2.new(1, 0, 0, 24),       -- slightly taller
+                Size = UDim2.new(1, 0, 0, 20),
                 BackgroundTransparency = 1,
                 Name = "Option"
             })
@@ -1137,7 +1146,7 @@ function antoralib:MakeWindow(Configs)
                 Position = UDim2.new(0, 5),
                 BackgroundTransparency = 1,
                 TextTruncate = "AtEnd",
-                TextSize = 16,                       -- was 14
+                TextSize = 14,
                 TextXAlignment = "Left"
             }), "Text")
 
@@ -1179,8 +1188,8 @@ function antoralib:MakeWindow(Configs)
 
             local FButton, LabelFunc = ButtonFrame(Container, BName, BDescription, UDim2.new(1, -20))
             local ButtonIcon = Create("ImageLabel", FButton, {
-                Size = UDim2.new(0, 18, 0, 18),
-                Position = UDim2.new(1, -12, 0.5),
+                Size = UDim2.new(0, 14, 0, 14),
+                Position = UDim2.new(1, -10, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 BackgroundTransparency = 1,
                 Image = "rbxassetid://10709791437"
@@ -1205,7 +1214,6 @@ function antoralib:MakeWindow(Configs)
             return Button
         end
 
-        -- ======== Toggle (scaled) ========
         function Tab:AddToggle(Configs)
             local TName = Configs[1] or Configs.Name or Configs.Title or "Toggle"
             local TDesc = Configs.Desc or Configs.Description or ""
@@ -1214,11 +1222,11 @@ function antoralib:MakeWindow(Configs)
             local Default = Configs[2] or Configs.Default or false
             if CheckFlag(Flag) then Default = GetFlag(Flag) end
 
-            local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -48))
+            local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -38))
 
             local ToggleHolder = InsertTheme(Create("Frame", Button, {
-                Size = UDim2.new(0, 50, 0, 24),      -- was 35x18
-                Position = UDim2.new(1, -12, 0.5),
+                Size = UDim2.new(0, 35, 0, 18),
+                Position = UDim2.new(1, -10, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 BackgroundColor3 = Theme["Color Stroke"]
             }), "Stroke")
@@ -1226,13 +1234,13 @@ function antoralib:MakeWindow(Configs)
 
             local Slider = Create("Frame", ToggleHolder, {
                 BackgroundTransparency = 1,
-                Size = UDim2.new(0.85, 0, 0.85, 0),
+                Size = UDim2.new(0.8, 0, 0.8, 0),
                 Position = UDim2.new(0.5, 0, 0.5, 0),
                 AnchorPoint = Vector2.new(0.5, 0.5)
             })
 
             local Toggle = InsertTheme(Create("Frame", Slider, {
-                Size = UDim2.new(0, 18, 0, 18),      -- was 12
+                Size = UDim2.new(0, 12, 0, 12),
                 Position = UDim2.new(0, 0, 0.5),
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -1290,7 +1298,6 @@ function antoralib:MakeWindow(Configs)
             return Toggle
         end
 
-        -- ======== Dropdown (scaled) ========
         function Tab:AddDropdown(Configs)
             local DName = Configs[1] or Configs.Name or Configs.Title or "Dropdown"
             local DDesc = Configs.Desc or Configs.Description or ""
@@ -1300,11 +1307,11 @@ function antoralib:MakeWindow(Configs)
             local DMultiSelect = Configs.MultiSelect or false
             local Callback = Funcs:GetCallback(Configs, 4)
 
-            local Button, LabelFunc = ButtonFrame(Container, DName, DDesc, UDim2.new(1, -190))
+            local Button, LabelFunc = ButtonFrame(Container, DName, DDesc, UDim2.new(1, -180))
 
             local SelectedFrame = InsertTheme(Create("Frame", Button, {
-                Size = UDim2.new(0, 180, 0, 24),     -- was 150x18
-                Position = UDim2.new(1, -12, 0.5),
+                Size = UDim2.new(0, 150, 0, 18),
+                Position = UDim2.new(1, -10, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 BackgroundColor3 = Theme["Color Stroke"]
             }), "Stroke")
@@ -1322,8 +1329,8 @@ function antoralib:MakeWindow(Configs)
             }), "Text")
 
             local Arrow = Create("ImageLabel", SelectedFrame, {
-                Size = UDim2.new(0, 20, 0, 20),      -- was 15
-                Position = UDim2.new(0, -6, 0.5),
+                Size = UDim2.new(0, 15, 0, 15),
+                Position = UDim2.new(0, -5, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 Image = "rbxassetid://10709791523",
                 BackgroundTransparency = 1
@@ -1354,7 +1361,7 @@ function antoralib:MakeWindow(Configs)
             local ScrollFrame = InsertTheme(Create("ScrollingFrame", DropFrame, {
                 ScrollBarImageColor3 = Theme["Color Theme"],
                 Size = UDim2.new(1, 0, 1, 0),
-                ScrollBarThickness = 2,
+                ScrollBarThickness = 1.5,
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 CanvasSize = UDim2.new(),
@@ -1377,7 +1384,7 @@ function antoralib:MakeWindow(Configs)
             local function Disable()
                 WaitClick = true
                 CreateTween({Arrow, "Rotation", 0, 0.2})
-                CreateTween({DropFrame, "Size", UDim2.new(0, 182, 0, 0), 0.2, true})
+                CreateTween({DropFrame, "Size", UDim2.new(0, 152, 0, 0), 0.2, true})
                 CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
                 Arrow.Image = "rbxassetid://10709791523"
                 NoClickFrame.Visible = false
@@ -1385,7 +1392,7 @@ function antoralib:MakeWindow(Configs)
             end
 
             local function GetFrameSize()
-                return UDim2.fromOffset(182, ScrollSize)
+                return UDim2.fromOffset(152, ScrollSize)
             end
 
             local function CalculateSize()
@@ -1395,7 +1402,7 @@ function antoralib:MakeWindow(Configs)
                         Count = Count + 1
                     end
                 end
-                ScrollSize = (math.clamp(Count, 0, 10) * 28) + 10   -- taller options
+                ScrollSize = (math.clamp(Count, 0, 10) * 25) + 10
                 if NoClickFrame.Visible then
                     NoClickFrame.Visible = true
                     CreateTween({DropFrame, "Size", GetFrameSize(), 0.2, true})
@@ -1408,7 +1415,7 @@ function antoralib:MakeWindow(Configs)
                 if NoClickFrame.Visible then
                     Arrow.Image = "rbxassetid://10709791523"
                     CreateTween({Arrow, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
-                    CreateTween({DropFrame, "Size", UDim2.new(0, 182, 0, 0), 0.2, true})
+                    CreateTween({DropFrame, "Size", UDim2.new(0, 152, 0, 0), 0.2, true})
                     NoClickFrame.Visible = false
                 else
                     NoClickFrame.Visible = true
@@ -1430,7 +1437,7 @@ function antoralib:MakeWindow(Configs)
                 CreateTween({DropFrame, "Position", NewPos, 0.1})
             end
 
-            -- Options management (same as original but scaled option buttons)
+            -- Options management (same as original)
             local AddNewOptions, GetOptions, AddOption, RemoveOption, Selected do
                 local Default = type(OpDefault) ~= "table" and {OpDefault} or OpDefault
                 local MultiSelect = DMultiSelect
@@ -1471,7 +1478,7 @@ function antoralib:MakeWindow(Configs)
                         for _,v in pairs(Options) do
                             local nodes, Stats = v.nodes, v.Stats
                             CreateTween({nodes[2], "BackgroundTransparency", Stats and 0 or 0.8, 0.35})
-                            CreateTween({nodes[2], "Size", Stats and UDim2.fromOffset(5, 14) or UDim2.fromOffset(5, 4), 0.35})
+                            CreateTween({nodes[2], "Size", Stats and UDim2.fromOffset(4, 12) or UDim2.fromOffset(4, 4), 0.35})
                             CreateTween({nodes[3], "TextTransparency", Stats and 0 or 0.4, 0.35})
                         end
                     else
@@ -1479,7 +1486,7 @@ function antoralib:MakeWindow(Configs)
                             local Slt = v.Value == Selected
                             local nodes = v.nodes
                             CreateTween({nodes[2], "BackgroundTransparency", Slt and 0 or 1, 0.35})
-                            CreateTween({nodes[2], "Size", Slt and UDim2.fromOffset(5, 16) or UDim2.fromOffset(5, 4), 0.35})
+                            CreateTween({nodes[2], "Size", Slt and UDim2.fromOffset(4, 14) or UDim2.fromOffset(4, 4), 0.35})
                             CreateTween({nodes[3], "TextTransparency", Slt and 0 or 0.4, 0.35})
                         end
                     end
@@ -1518,7 +1525,7 @@ function antoralib:MakeWindow(Configs)
 
                     local Button = Make("Button", ScrollFrame, {
                         Name = "Option",
-                        Size = UDim2.new(1, 0, 0, 25),      -- was 21
+                        Size = UDim2.new(1, 0, 0, 21),
                         Position = UDim2.new(0, 0, 0.5),
                         AnchorPoint = Vector2.new(0, 0.5)
                     })
@@ -1526,7 +1533,7 @@ function antoralib:MakeWindow(Configs)
 
                     local IsSelected = InsertTheme(Create("Frame", Button, {
                         Position = UDim2.new(0, 1, 0.5),
-                        Size = UDim2.new(0, 5, 0, 4),
+                        Size = UDim2.new(0, 4, 0, 4),
                         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                         BackgroundTransparency = 1,
                         AnchorPoint = Vector2.new(0, 0.5)
@@ -1539,14 +1546,13 @@ function antoralib:MakeWindow(Configs)
 
                     local OptioneName = InsertTheme(Create("TextLabel", Button, {
                         Size = UDim2.new(1, 0, 1),
-                        Position = UDim2.new(0, 12),
+                        Position = UDim2.new(0, 10),
                         Text = Name,
                         TextColor3 = Theme["Color Text"],
                         Font = Enum.Font.GothamBold,
                         TextXAlignment = "Left",
                         BackgroundTransparency = 1,
-                        TextTransparency = 0.4,
-                        TextSize = 13
+                        TextTransparency = 0.4
                     }), "Text")
 
                     Button.Activated:Connect(function()
@@ -1584,7 +1590,7 @@ function antoralib:MakeWindow(Configs)
             Button.Activated:Connect(Minimize)
             NoClickFrame.MouseButton1Down:Connect(Disable)
             NoClickFrame.MouseButton1Click:Connect(Disable)
-            Main:GetPropertyChangedSignal("Visible"):Connect(Disable)
+            MainPanel.Frame:GetPropertyChangedSignal("Visible"):Connect(Disable)
             SelectedFrame:GetPropertyChangedSignal("AbsolutePosition"):Connect(CalculatePos)
             Button.Activated:Connect(CalculateSize)
             ScrollFrame.ChildAdded:Connect(CalculateSize)
@@ -1629,7 +1635,6 @@ function antoralib:MakeWindow(Configs)
             return Dropdown
         end
 
-        -- ======== Slider (scaled) ========
         function Tab:AddSlider(Configs)
             local SName = Configs[1] or Configs.Name or Configs.Title or "Slider!"
             local SDesc = Configs.Desc or Configs.Description or ""
@@ -1645,7 +1650,7 @@ function antoralib:MakeWindow(Configs)
             local Button, LabelFunc = ButtonFrame(Container, SName, SDesc, UDim2.new(1, -180))
 
             local SliderHolder = Create("TextButton", Button, {
-                Size = UDim2.new(0.50, 0, 1),           -- wider
+                Size = UDim2.new(0.45, 0, 1),
                 Position = UDim2.new(1),
                 AnchorPoint = Vector2.new(1, 0),
                 AutoButtonColor = false,
@@ -1655,7 +1660,7 @@ function antoralib:MakeWindow(Configs)
 
             local SliderBar = InsertTheme(Create("Frame", SliderHolder, {
                 BackgroundColor3 = Theme["Color Stroke"],
-                Size = UDim2.new(1, -25, 0, 10),        -- was 6
+                Size = UDim2.new(1, -20, 0, 6),
                 Position = UDim2.new(0.5, 0, 0.5),
                 AnchorPoint = Vector2.new(0.5, 0.5)
             }), "Stroke")
@@ -1673,7 +1678,7 @@ function antoralib:MakeWindow(Configs)
             Make("Corner", Indicator)
 
             local SliderIcon = Create("Frame", SliderBar, {
-                Size = UDim2.new(0, 10, 0, 16),        -- was 6x12
+                Size = UDim2.new(0, 6, 0, 12),
                 BackgroundColor3 = Color3.fromRGB(220, 220, 220),
                 Position = UDim2.fromScale(0.3, 0.5),
                 AnchorPoint = Vector2.new(0.5, 0.5),
@@ -1682,14 +1687,13 @@ function antoralib:MakeWindow(Configs)
             Make("Corner", SliderIcon)
 
             local LabelVal = InsertTheme(Create("TextLabel", SliderHolder, {
-                Size = UDim2.new(0, 20, 0, 16),
+                Size = UDim2.new(0, 14, 0, 14),
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(0, 0, 0.5),
                 BackgroundTransparency = 1,
                 TextColor3 = Theme["Color Text"],
                 Font = Enum.Font.GothamMedium,
-                TextSize = 14,
-                Text = "0"
+                TextSize = 12
             }), "Text")
 
             local BaseMousePos = Create("Frame", SliderBar, {
@@ -1761,7 +1765,6 @@ function antoralib:MakeWindow(Configs)
             return Slider
         end
 
-        -- ======== TextBox (scaled) ========
         function Tab:AddTextBox(Configs)
             local TName = Configs[1] or Configs.Name or Configs.Title or "Text Box"
             local TDesc = Configs.Desc or Configs.Description or ""
@@ -1774,11 +1777,11 @@ function antoralib:MakeWindow(Configs)
                 TDefault = false
             end
 
-            local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -48))
+            local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -38))
 
             local SelectedFrame = InsertTheme(Create("Frame", Button, {
-                Size = UDim2.new(0, 180, 0, 24),     -- was 150x18
-                Position = UDim2.new(1, -12, 0.5),
+                Size = UDim2.new(0, 150, 0, 18),
+                Position = UDim2.new(1, -10, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 BackgroundColor3 = Theme["Color Stroke"]
             }), "Stroke")
@@ -1798,8 +1801,8 @@ function antoralib:MakeWindow(Configs)
             }), "Text")
 
             local Pencil = Create("ImageLabel", SelectedFrame, {
-                Size = UDim2.new(0, 16, 0, 16),
-                Position = UDim2.new(0, -6, 0.5),
+                Size = UDim2.new(0, 12, 0, 12),
+                Position = UDim2.new(0, -5, 0.5),
                 AnchorPoint = Vector2.new(1, 0.5),
                 Image = "",
                 BackgroundTransparency = 1
@@ -1831,7 +1834,6 @@ function antoralib:MakeWindow(Configs)
             return TextBox
         end
 
-        -- ======== DiscordInvite (scaled) ========
         function Tab:AddDiscordInvite(Configs)
             local Title = Configs[1] or Configs.Name or Configs.Title or "Discord"
             local Desc = Configs.Desc or Configs.Description or ""
@@ -1839,35 +1841,35 @@ function antoralib:MakeWindow(Configs)
             local Invite = Configs[3] or Configs.Invite or ""
 
             local InviteHolder = Create("Frame", Container, {
-                Size = UDim2.new(1, 0, 0, 100),        -- was 80
+                Size = UDim2.new(1, 0, 0, 80),
                 Name = "Option",
                 BackgroundTransparency = 1
             })
 
             local InviteLabel = Create("TextLabel", InviteHolder, {
-                Size = UDim2.new(1, 0, 0, 18),
+                Size = UDim2.new(1, 0, 0, 15),
                 Position = UDim2.new(0, 5),
                 TextColor3 = Color3.fromRGB(176, 96, 244),
                 Font = Enum.Font.GothamBold,
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
-                TextSize = 12,
+                TextSize = 10,
                 Text = Invite
             })
 
             local FrameHolder = InsertTheme(Create("Frame", InviteHolder, {
-                Size = UDim2.new(1, 0, 0, 80),
+                Size = UDim2.new(1, 0, 0, 65),
                 AnchorPoint = Vector2.new(0, 1),
                 Position = UDim2.new(0, 0, 1),
                 BackgroundColor3 = Theme["Color Hub 2"]
             }), "Frame")
             Make("Corner", FrameHolder)
             Make("Gradient", FrameHolder)
-            AddMarbleOverlay(FrameHolder, UDim.new(0, 8))
+            AddMarbleOverlay(FrameHolder, UDim.new(0, 6))
 
             local ImageLabel = Create("ImageLabel", FrameHolder, {
-                Size = UDim2.new(0, 36, 0, 36),
-                Position = UDim2.new(0, 8, 0, 8),
+                Size = UDim2.new(0, 30, 0, 30),
+                Position = UDim2.new(0, 7, 0, 7),
                 Image = Logo,
                 BackgroundTransparency = 1
             })
@@ -1875,42 +1877,42 @@ function antoralib:MakeWindow(Configs)
             Make("Stroke", ImageLabel)
 
             local LTitle = InsertTheme(Create("TextLabel", FrameHolder, {
-                Size = UDim2.new(1, -52, 0, 18),
-                Position = UDim2.new(0, 52, 0, 8),
+                Size = UDim2.new(1, -52, 0, 15),
+                Position = UDim2.new(0, 44, 0, 7),
                 Font = Enum.Font.GothamBold,
                 TextColor3 = Theme["Color Text"],
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
-                TextSize = 14,
+                TextSize = 10,
                 Text = Title
             }), "Text")
 
             local LDesc = InsertTheme(Create("TextLabel", FrameHolder, {
                 Size = UDim2.new(1, -52, 0, 0),
-                Position = UDim2.new(0, 52, 0, 28),
+                Position = UDim2.new(0, 44, 0, 22),
                 TextWrapped = "Y",
                 AutomaticSize = "Y",
                 Font = Enum.Font.Gotham,
                 TextColor3 = Theme["Color Dark Text"],
                 TextXAlignment = "Left",
                 BackgroundTransparency = 1,
-                TextSize = 11,
+                TextSize = 8,
                 Text = Desc
             }), "DarkText")
 
             local JoinButton = Create("TextButton", FrameHolder, {
-                Size = UDim2.new(1, -16, 0, 20),
+                Size = UDim2.new(1, -14, 0, 16),
                 AnchorPoint = Vector2.new(0.5, 1),
-                Position = UDim2.new(0.5, 0, 1, -8),
+                Position = UDim2.new(0.5, 0, 1, -7),
                 Text = "Join",
                 Font = Enum.Font.GothamBold,
-                TextSize = 14,
+                TextSize = 12,
                 TextColor3 = Color3.fromRGB(220, 220, 220),
                 BackgroundColor3 = Color3.fromRGB(176, 96, 244)
             })
-            Make("Corner", JoinButton, UDim.new(0, 6))
+            Make("Corner", JoinButton, UDim.new(0, 5))
             Make("Gradient", JoinButton)
-            AddMarbleOverlay(JoinButton, UDim.new(0, 6))
+            AddMarbleOverlay(JoinButton, UDim.new(0, 5))
 
             local ClickDelay
             JoinButton.Activated:Connect(function()
