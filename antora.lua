@@ -21,7 +21,7 @@ local antoralib = {
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
             ["Color Dark Text"] = Color3.fromRGB(180, 180, 180),
-            ["antora Icon"] = "https://www.roblox.com/asset-thumbnail/image?assetId=76200217707529&width=678&height=810&format=png"
+            ["antora Icon"] = "https://www.roblox.com/asset-thumbnail/image?assetId=133709037992585&width=678&height=810&format=png"
         }
     },
     Info = {
@@ -48,11 +48,11 @@ local UIScale = ViewportSize.Y / 450
 local Settings = antoralib.Settings
 local Flags = antoralib.Flags
 
--- Purple gradient (bottom → top)
+-- Purple gradient (bottom → top, vertical)
 local PURPLE_GRADIENT = ColorSequence.new({
-    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple
+    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 45, 220)),    -- Dark Purple (bottom)
     ColorSequenceKeypoint.new(0.45, Color3.fromRGB(176, 96, 244)),    -- Medium Purple
-    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),   -- Light Pink/Purple
+    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(236, 198, 255)),   -- Light Pink/Purple (top)
 })
 
 local SetProps, SetChildren, InsertTheme, Create do
@@ -403,7 +403,7 @@ AddEle("Gradient", function(parent, props, ...)
     local args = {...}
     local New = InsertTheme(SetProps(Create("UIGradient", parent, {
         Color = PURPLE_GRADIENT,
-        Rotation = 180  -- bottom → top
+        Rotation = 180  -- bottom → top (vertical)
     }), props), "Gradient")
     return New
 end)
@@ -582,6 +582,8 @@ function antoralib:MakeWindow(Configs)
         end
     end;LoadFile()
     local UISizeX, UISizeY = unpack(antoralib.Save.UISize)
+
+    -- MAIN FRAME
     local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
         Size = UDim2.fromOffset(UISizeX, UISizeY),
         Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -589,15 +591,18 @@ function antoralib:MakeWindow(Configs)
         Name = "Hub"
     }), "Main")
 
-    -- White static stroke
+    -- Rounded corners on MainFrame
+    local MainCorner = Make("Corner", MainFrame, UDim.new(0, 20))  -- 20px radius like your marble UI
+
+    -- White frosty stroke (like your marble UI)
     local GlowStroke = Create("UIStroke", MainFrame, {
         Color = Color3.new(1, 1, 1),
         Thickness = 2,
-        Transparency = 0,
+        Transparency = 0.3,  -- frosty effect
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     })
 
-    -- Inner frame with bottom→top gradient
+    -- Inner frame (holds gradient + image)
     local InnerFrame = Create("Frame", MainFrame, {
         Size = UDim2.new(1, 0, 1, 0),
         Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -605,9 +610,10 @@ function antoralib:MakeWindow(Configs)
         BackgroundTransparency = 0,
         Name = "InnerFrame"
     })
+    Make("Corner", InnerFrame, UDim.new(0, 20))  -- match corner
     Make("Gradient", InnerFrame)  -- bottom → top
 
-    -- Marble texture (visible, blended with gradient, inside the stroke)
+    -- Marble texture (visible, blends with gradient)
     local BackgroundImage = Create("ImageLabel", InnerFrame, {
         Size = UDim2.new(1, 0, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
@@ -617,27 +623,24 @@ function antoralib:MakeWindow(Configs)
         ImageColor3 = Color3.fromRGB(255, 255, 255),
         ImageTransparency = 0.6
     })
-    -- Match corner radius of MainFrame (0 for square, change to round if you like)
-    Make("Corner", BackgroundImage, UDim.new(0, 0))
+    Make("Corner", BackgroundImage, UDim.new(0, 20))  -- match corner
 
-    -- Optional subtle dark overlay (adjust transparency to your taste)
+    -- Optional dark overlay (adjust to taste)
     local Overlay = Create("Frame", BackgroundImage, {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(10, 10, 10),
         BackgroundTransparency = 0.3,
         ZIndex = 1
     })
+    Make("Corner", Overlay, UDim.new(0, 20))
 
     MakeDrag(MainFrame)
 
-    local MainCorner = Make("Corner", MainFrame, UDim.new(0, 0))
-
-    -- Put Components in InnerFrame
+    -- The rest of the UI (Components, DropdownHolder, TopBar, etc.)
     local Components = Create("Folder", InnerFrame, {
         Name = "Components"
     })
 
-    -- Put DropdownHolder in InnerFrame
     local DropdownHolder = Create("Folder", InnerFrame, {
         Name = "Dropdown"
     })
