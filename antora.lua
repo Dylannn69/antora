@@ -392,7 +392,9 @@ end)
 local FONT_TAB = Enum.Font.LuckiestGuy          -- tabs and header
 local FONT_CONTENT = Enum.Font.BuilderSansExtraBold  -- everything inside main panel
 
--- ButtonFrame with updated fonts
+-- ================================================================
+-- UPDATED ButtonFrame (Now matches Main/Side panel style)
+-- ================================================================
 local function ButtonFrame(Instance, Title, Description, HolderSize)
     local TitleL = InsertTheme(Create("TextLabel", {
         Font = FONT_CONTENT,
@@ -423,21 +425,28 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
         RichText = true
     }), "DarkText")
 
+    -- 1. Changed BackgroundColor3 to white with 0.15 transparency (same as panels)
     local Frame = Make("Button", Instance, {
         Size = UDim2.new(1, 0, 0, 25),
         AutomaticSize = "Y",
-        Name = "Option"
+        Name = "Option",
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.15
     })
     Make("Corner", Frame, UDim.new(0, 6))
     Make("Gradient", Frame)
-    AddMarbleOverlay(Frame, UDim.new(0, 6))
+    
+    -- 2. Get marble and force it to ZIndex 2 (on top of white background)
+    local marble = AddMarbleOverlay(Frame, UDim.new(0, 6))
+    marble.ZIndex = 2
 
     local LabelHolder = Create("Frame", Frame, {
         AutomaticSize = "Y",
         BackgroundTransparency = 1,
         Size = HolderSize,
         Position = UDim2.new(0, 10, 0),
-        AnchorPoint = Vector2.new(0, 0)
+        AnchorPoint = Vector2.new(0, 0),
+        ZIndex = 3 -- Keeps text and controls above the marble
     }, {
         Create("UIListLayout", {
             SortOrder = "LayoutOrder",
