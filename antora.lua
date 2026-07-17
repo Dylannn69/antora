@@ -16,7 +16,7 @@ local antoralib = {
                 ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)),
                 ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))
             }),
-            ["Color Hub 2"] = Color3.fromRGB(45, 30, 70),
+            ["Color Hub 2"] = Color3.fromRGB(255, 255, 255), -- used for glass base
             ["Color Stroke"] = Color3.fromRGB(40, 40, 40),
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
@@ -356,20 +356,22 @@ AddEle("Stroke", function(parent, props, ...)
     return New
 end)
 
+-- Glassmorphism Button element
 AddEle("Button", function(parent, props, ...)
     local args = {...}
     local New = InsertTheme(SetProps(Create("TextButton", parent, {
         Text = "",
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Theme["Color Hub 2"],
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- white base for glass
+        BackgroundTransparency = 0.3, -- glass effect
         AutoButtonColor = false
     }), props), "Frame")
 
     New.MouseEnter:Connect(function()
-        New.BackgroundTransparency = 0.4
+        New.BackgroundTransparency = 0.2
     end)
     New.MouseLeave:Connect(function()
-        New.BackgroundTransparency = 0
+        New.BackgroundTransparency = 0.3
     end)
     if args[1] then
         New.Activated:Connect(args[1])
@@ -547,7 +549,7 @@ function antoralib:GetFlag(Flag)
 end
 
 -- ============================
---  MakeWindow with updated header (narrower, taller, touches main)
+--  MakeWindow
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -637,24 +639,12 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- ========== UPDATED HEADER ==========
-    -- narrower (0.4), taller (0.12), positioned just above main with a tiny gap
-    local HeaderWidth = 0.40
-    local HeaderHeight = 0.12
-    -- Position Y: main top is at -MainHeight/2 relative to its anchor (0.5,0.5)
-    -- Main top = MainPos.Y - MainHeight/2 = 0.54 - 0.75/2 = 0.54 - 0.375 = 0.165
-    -- We want header to sit above it with a small gap (e.g., 0.01)
-    -- Header position Y = 0.165 - (HeaderHeight/2) - gap
-    local gap = 0.005
-    local headerY = 0.165 - (HeaderHeight/2) - gap
-    local HeaderPos = UDim2.new(0.5, 0, headerY, 0)
-    local HeaderSize = UDim2.fromScale(HeaderWidth, HeaderHeight)
-
+    -- Header
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
         Name = "HeaderShadow",
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = HeaderPos + UDim2.new(0, 2, 0, 4), -- small offset
-        Size = HeaderSize,
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 2, -0.04, 4),
+        Size = UDim2.fromScale(0.5, 0.09),
         BackgroundColor3 = Color3.fromRGB(0,0,0),
         BackgroundTransparency = 0.4,
         BorderSizePixel = 0,
@@ -664,9 +654,9 @@ function antoralib:MakeWindow(Configs)
 
     local Header = Create("Frame", MainPanel.Frame, {
         Name = "Header",
-        AnchorPoint = Vector2.new(0.5,0.5),
-        Position = HeaderPos,
-        Size = HeaderSize,
+        AnchorPoint = Vector2.new(0.5,0),
+        Position = UDim2.new(0.5,0,-0.04,0),
+        Size = UDim2.fromScale(0.5,0.09),
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BorderSizePixel = 0
     })
@@ -696,7 +686,7 @@ function antoralib:MakeWindow(Configs)
         TextColor3 = Color3.fromRGB(255,255,255)
     })
 
-    -- ========== CLOSE BUTTON with new image ID ==========
+    -- Close button (minimizes) with new image
     local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -973,7 +963,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- MakeTab (supports both table and separate args)
     function Window:MakeTab(paste, Configs)
         local TName, TIcon
         if type(paste) == "table" then
@@ -1325,7 +1314,7 @@ function antoralib:MakeWindow(Configs)
 
             local DropFrame = Create("Frame", NoClickFrame, {
                 Size = UDim2.new(SelectedFrame.Size.X, 0, 0),
-                BackgroundTransparency = 0.1,
+                BackgroundTransparency = 0.2, -- glassy
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 AnchorPoint = Vector2.new(0, 1),
                 Name = "DropdownFrame",
