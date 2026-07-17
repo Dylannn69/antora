@@ -16,7 +16,7 @@ local antoralib = {
                 ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)),
                 ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))
             }),
-            ["Color Hub 2"] = Color3.fromRGB(255, 255, 255), -- used for glass base
+            ["Color Hub 2"] = Color3.fromRGB(45, 30, 70),
             ["Color Stroke"] = Color3.fromRGB(40, 40, 40),
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
             ["Color Text"] = Color3.fromRGB(243, 243, 243),
@@ -356,22 +356,20 @@ AddEle("Stroke", function(parent, props, ...)
     return New
 end)
 
--- Glassmorphism Button element
 AddEle("Button", function(parent, props, ...)
     local args = {...}
     local New = InsertTheme(SetProps(Create("TextButton", parent, {
         Text = "",
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- white base for glass
-        BackgroundTransparency = 0.3, -- glass effect
+        BackgroundColor3 = Theme["Color Hub 2"],
         AutoButtonColor = false
     }), props), "Frame")
 
     New.MouseEnter:Connect(function()
-        New.BackgroundTransparency = 0.2
+        New.BackgroundTransparency = 0.4
     end)
     New.MouseLeave:Connect(function()
-        New.BackgroundTransparency = 0.3
+        New.BackgroundTransparency = 0
     end)
     if args[1] then
         New.Activated:Connect(args[1])
@@ -686,7 +684,7 @@ function antoralib:MakeWindow(Configs)
         TextColor3 = Color3.fromRGB(255,255,255)
     })
 
-    -- Close button (minimizes) with new image
+    -- Close button
     local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -694,7 +692,7 @@ function antoralib:MakeWindow(Configs)
         Size = UDim2.fromOffset(56, 56),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Image = "rbxassetid://118561288885971",  -- new minimize icon
+        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=114840795551292&width=678&height=810&format=png",
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 10
     })
@@ -963,6 +961,7 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
+    -- ===== FIXED MakeTab – supports both table and separate args =====
     function Window:MakeTab(paste, Configs)
         local TName, TIcon
         if type(paste) == "table" then
@@ -1314,7 +1313,7 @@ function antoralib:MakeWindow(Configs)
 
             local DropFrame = Create("Frame", NoClickFrame, {
                 Size = UDim2.new(SelectedFrame.Size.X, 0, 0),
-                BackgroundTransparency = 0.2, -- glassy
+                BackgroundTransparency = 0.1,
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 AnchorPoint = Vector2.new(0, 1),
                 Name = "DropdownFrame",
