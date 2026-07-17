@@ -546,9 +546,6 @@ function antoralib:GetFlag(Flag)
     return GetFlag(Flag)
 end
 
--- ============================
---  MakeWindow
--- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
     local WMiniText = Configs[2] or Configs.SubTitle or "by: unkinou"
@@ -961,7 +958,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- ===== FIXED MakeTab – supports both table and separate args =====
     function Window:MakeTab(paste, Configs)
         local TName, TIcon
         if type(paste) == "table" then
