@@ -16,7 +16,6 @@ local antoralib = {
                 ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)),
                 ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))
             }),
-            -- Changed to dark purple to match the theme
             ["Color Hub 2"] = Color3.fromRGB(45, 30, 70),
             ["Color Stroke"] = Color3.fromRGB(40, 40, 40),
             ["Color Theme"] = Color3.fromRGB(255, 50, 50),
@@ -388,7 +387,6 @@ AddEle("Gradient", function(parent, props, ...)
 end)
 
 local function ButtonFrame(Instance, Title, Description, HolderSize)
-    -- Font: BuilderSansExtraBold for all text inside buttons
     local TitleL = InsertTheme(Create("TextLabel", {
         Font = Enum.Font.BuilderSansExtraBold,
         TextColor3 = Theme["Color Text"],
@@ -549,7 +547,7 @@ function antoralib:GetFlag(Flag)
 end
 
 -- ============================
---  MakeWindow with font and color updates
+--  MakeWindow
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -674,7 +672,6 @@ function antoralib:MakeWindow(Configs)
     })
     Make("Corner", HeaderMarble, UDim.new(0, 18))
 
-    -- Title – font LuckiestGuy
     local Title = Create("TextLabel", Header, {
         Name = "Title",
         AnchorPoint = Vector2.new(0.5,0.5),
@@ -859,7 +856,6 @@ function antoralib:MakeWindow(Configs)
             Position = UDim2.fromScale(0.5, 0.5),
             AnchorPoint = Vector2.new(0.5, 0.5)
         }, {
-            -- Dialog title – BuilderSansExtraBold
             Create("TextLabel", {
                 Font = Enum.Font.BuilderSansExtraBold,
                 Size = UDim2.new(1, 0, 0, 20),
@@ -870,7 +866,6 @@ function antoralib:MakeWindow(Configs)
                 Position = UDim2.fromOffset(15, 5),
                 BackgroundTransparency = 1
             }),
-            -- Dialog text – BuilderSansExtraBold
             Create("TextLabel", {
                 Font = Enum.Font.BuilderSansExtraBold,
                 Size = UDim2.new(1, -25),
@@ -966,10 +961,16 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
+    -- ===== FIXED MakeTab – supports both table and separate args =====
     function Window:MakeTab(paste, Configs)
-        if type(paste) == "table" then Configs = paste end
-        local TName = Configs[1] or Configs.Title or "Tab!"
-        local TIcon = Configs[2] or Configs.Icon or ""
+        local TName, TIcon
+        if type(paste) == "table" then
+            TName = paste[1] or paste.Title or "Tab!"
+            TIcon = paste[2] or paste.Icon or ""
+        else
+            TName = paste or "Tab!"
+            TIcon = Configs or ""
+        end
 
         TIcon = antoralib:GetIcon(TIcon)
         if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
@@ -995,7 +996,6 @@ function antoralib:MakeWindow(Configs)
             })
         end
 
-        -- Tab label – LuckiestGuy
         local LabelTitle = Create("TextLabel", TabButton, {
             Size = UDim2.new(1, -30, 1, 0),
             Position = UDim2.new(0, TIcon and 32 or 10, 0.5),
@@ -1105,7 +1105,6 @@ function antoralib:MakeWindow(Configs)
                 Name = "Option"
             })
 
-            -- Section label – BuilderSansExtraBold
             local SectionLabel = InsertTheme(Create("TextLabel", SectionFrame, {
                 Font = Enum.Font.BuilderSansExtraBold,
                 Text = SectionName,
@@ -1285,7 +1284,6 @@ function antoralib:MakeWindow(Configs)
             }), "Stroke")
             Make("Corner", SelectedFrame, UDim.new(0, 4))
 
-            -- ActiveLabel – BuilderSansExtraBold
             local ActiveLabel = InsertTheme(Create("TextLabel", SelectedFrame, {
                 Size = UDim2.new(0.85, 0, 0.85, 0),
                 AnchorPoint = Vector2.new(0.5, 0.5),
@@ -1512,7 +1510,6 @@ function antoralib:MakeWindow(Configs)
                     grad.Parent = IsSelected
                     Make("Corner", IsSelected, UDim.new(0.5, 0))
 
-                    -- Option name – BuilderSansExtraBold
                     local OptioneName = InsertTheme(Create("TextLabel", Button, {
                         Size = UDim2.new(1, 0, 1),
                         Position = UDim2.new(0, 10),
@@ -1655,7 +1652,6 @@ function antoralib:MakeWindow(Configs)
             })
             Make("Corner", SliderIcon)
 
-            -- Slider value label – BuilderSansExtraBold
             local LabelVal = InsertTheme(Create("TextLabel", SliderHolder, {
                 Size = UDim2.new(0, 14, 0, 14),
                 AnchorPoint = Vector2.new(1, 0.5),
@@ -1757,7 +1753,6 @@ function antoralib:MakeWindow(Configs)
             }), "Stroke")
             Make("Corner", SelectedFrame, UDim.new(0, 4))
 
-            -- TextBox input – BuilderSansExtraBold
             local TextBoxInput = InsertTheme(Create("TextBox", SelectedFrame, {
                 Size = UDim2.new(0.85, 0, 0.85, 0),
                 AnchorPoint = Vector2.new(0.5, 0.5),
@@ -1847,7 +1842,6 @@ function antoralib:MakeWindow(Configs)
             Make("Corner", ImageLabel, UDim.new(0, 4))
             Make("Stroke", ImageLabel)
 
-            -- Discord title – BuilderSansExtraBold
             local LTitle = InsertTheme(Create("TextLabel", FrameHolder, {
                 Size = UDim2.new(1, -52, 0, 15),
                 Position = UDim2.new(0, 44, 0, 7),
@@ -1859,7 +1853,6 @@ function antoralib:MakeWindow(Configs)
                 Text = Title
             }), "Text")
 
-            -- Discord description – BuilderSansExtraBold
             local LDesc = InsertTheme(Create("TextLabel", FrameHolder, {
                 Size = UDim2.new(1, -52, 0, 0),
                 Position = UDim2.new(0, 44, 0, 22),
@@ -1873,7 +1866,6 @@ function antoralib:MakeWindow(Configs)
                 Text = Desc
             }), "DarkText")
 
-            -- Join button – BuilderSansExtraBold
             local JoinButton = Create("TextButton", FrameHolder, {
                 Size = UDim2.new(1, -14, 0, 16),
                 AnchorPoint = Vector2.new(0.5, 1),
