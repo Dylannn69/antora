@@ -637,12 +637,15 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- Header
+    -- ===== HEADER (Narrower & Taller) =====
+    local HeaderWidth = 0.4   -- was 0.5
+    local HeaderHeight = 0.12 -- was 0.09
+
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
         Name = "HeaderShadow",
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(0.5, 2, -0.04, 4),
-        Size = UDim2.fromScale(0.5, 0.09),
+        Size = UDim2.fromScale(HeaderWidth, HeaderHeight),
         BackgroundColor3 = Color3.fromRGB(0,0,0),
         BackgroundTransparency = 0.4,
         BorderSizePixel = 0,
@@ -654,7 +657,7 @@ function antoralib:MakeWindow(Configs)
         Name = "Header",
         AnchorPoint = Vector2.new(0.5,0),
         Position = UDim2.new(0.5,0,-0.04,0),
-        Size = UDim2.fromScale(0.5,0.09),
+        Size = UDim2.fromScale(HeaderWidth, HeaderHeight),
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BorderSizePixel = 0
     })
@@ -684,7 +687,7 @@ function antoralib:MakeWindow(Configs)
         TextColor3 = Color3.fromRGB(255,255,255)
     })
 
-    -- Close button
+    -- ===== CLOSE BUTTON with new image =====
     local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -692,7 +695,7 @@ function antoralib:MakeWindow(Configs)
         Size = UDim2.fromOffset(56, 56),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=114840795551292&width=678&height=810&format=png",
+        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=118426337914143&width=420&height=420&format=png",
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 10
     })
@@ -961,7 +964,6 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
-    -- ===== FIXED MakeTab – supports both table and separate args =====
     function Window:MakeTab(paste, Configs)
         local TName, TIcon
         if type(paste) == "table" then
