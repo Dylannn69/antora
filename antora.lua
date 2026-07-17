@@ -547,7 +547,7 @@ function antoralib:GetFlag(Flag)
 end
 
 -- ============================
---  MakeWindow
+--  MakeWindow with updated header (narrower, taller, touches main)
 -- ============================
 function antoralib:MakeWindow(Configs)
     local WTitle = Configs[1] or Configs.Name or Configs.Title or "UI TEMPLATE"
@@ -637,15 +637,24 @@ function antoralib:MakeWindow(Configs)
     local SideSize = UDim2.fromScale(SideWidth, SideHeight)
     local SidePanel = CreatePanel("Side", SidePos, SideSize, 20, 1)
 
-    -- ===== HEADER (Narrower & Taller) =====
-    local HeaderWidth = 0.4   -- was 0.5
-    local HeaderHeight = 0.12 -- was 0.09
+    -- ========== UPDATED HEADER ==========
+    -- narrower (0.4), taller (0.12), positioned just above main with a tiny gap
+    local HeaderWidth = 0.40
+    local HeaderHeight = 0.12
+    -- Position Y: main top is at -MainHeight/2 relative to its anchor (0.5,0.5)
+    -- Main top = MainPos.Y - MainHeight/2 = 0.54 - 0.75/2 = 0.54 - 0.375 = 0.165
+    -- We want header to sit above it with a small gap (e.g., 0.01)
+    -- Header position Y = 0.165 - (HeaderHeight/2) - gap
+    local gap = 0.005
+    local headerY = 0.165 - (HeaderHeight/2) - gap
+    local HeaderPos = UDim2.new(0.5, 0, headerY, 0)
+    local HeaderSize = UDim2.fromScale(HeaderWidth, HeaderHeight)
 
     local HeaderShadow = Create("Frame", MainPanel.Frame, {
         Name = "HeaderShadow",
-        AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.new(0.5, 2, -0.04, 4),
-        Size = UDim2.fromScale(HeaderWidth, HeaderHeight),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = HeaderPos + UDim2.new(0, 2, 0, 4), -- small offset
+        Size = HeaderSize,
         BackgroundColor3 = Color3.fromRGB(0,0,0),
         BackgroundTransparency = 0.4,
         BorderSizePixel = 0,
@@ -655,9 +664,9 @@ function antoralib:MakeWindow(Configs)
 
     local Header = Create("Frame", MainPanel.Frame, {
         Name = "Header",
-        AnchorPoint = Vector2.new(0.5,0),
-        Position = UDim2.new(0.5,0,-0.04,0),
-        Size = UDim2.fromScale(HeaderWidth, HeaderHeight),
+        AnchorPoint = Vector2.new(0.5,0.5),
+        Position = HeaderPos,
+        Size = HeaderSize,
         BackgroundColor3 = Color3.fromRGB(255,255,255),
         BorderSizePixel = 0
     })
@@ -687,7 +696,7 @@ function antoralib:MakeWindow(Configs)
         TextColor3 = Color3.fromRGB(255,255,255)
     })
 
-    -- ===== CLOSE BUTTON with new image =====
+    -- ========== CLOSE BUTTON with new image ID ==========
     local CloseButton = Create("ImageButton", MainPanel.Frame, {
         Name = "CloseButton",
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -695,7 +704,7 @@ function antoralib:MakeWindow(Configs)
         Size = UDim2.fromOffset(56, 56),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Image = "https://www.roblox.com/asset-thumbnail/image?assetId=118426337914143&width=420&height=420&format=png",
+        Image = "rbxassetid://118561288885971",  -- new minimize icon
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 10
     })
@@ -964,6 +973,7 @@ function antoralib:MakeWindow(Configs)
         end
     end
 
+    -- MakeTab (supports both table and separate args)
     function Window:MakeTab(paste, Configs)
         local TName, TIcon
         if type(paste) == "table" then
